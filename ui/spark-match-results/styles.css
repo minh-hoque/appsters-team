@@ -460,6 +460,10 @@
     gap: var(--space-2);
     align-items: start;
   }
+
+  .spark-sticky-action {
+    display: none;
+  }
 }
 
 @media (max-width: 767px) {

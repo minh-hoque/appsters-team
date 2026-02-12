@@ -1,8 +1,12 @@
 import { createRoot } from "react-dom/client";
+import { motion, useReducedMotion } from "framer-motion";
 import { useWidgetProps } from "../hooks/use-widget-props";
+import "../spark-match-results/styles.css";
 import type { SparkAcceptanceToolOutput } from "./types";
 
 function App() {
+  const reduceMotion = useReducedMotion();
+
   const output = useWidgetProps<SparkAcceptanceToolOutput>({
     status: "accepted",
     acceptedAt: new Date().toISOString(),
@@ -21,22 +25,29 @@ function App() {
   });
 
   return (
-    <main className="w-full rounded-3xl border border-black/10 bg-white p-6 text-black shadow-[0_18px_42px_rgba(17,24,39,0.08)]">
-      <p className="text-xs uppercase tracking-[0.16em] text-black/50">Find a spark</p>
-      <h1 className="mt-2 text-2xl font-semibold">Spark accepted</h1>
-      <p className="mt-2 text-sm text-black/75">
-        {output.viewerProfile.displayName} and {output.selectedProfile.displayName} are locked in.
-      </p>
+    <main className="spark-root relative rounded-[20px] p-4 sm:p-6">
+      <div className="spark-container">
+        <motion.section
+          className="spark-confirm-panel spark-motion"
+          initial={reduceMotion ? false : { opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.28, ease: "easeOut" }}
+        >
+          <p className="spark-eyebrow">Find a spark</p>
+          <h1 className="spark-confirm-title">Spark accepted</h1>
+          <p className="spark-plan-copy">
+            {output.viewerProfile.displayName} and {output.selectedProfile.displayName} are now confirmed.
+            Everything after this handoff is handled by the dating app.
+          </p>
 
-      <div className="mt-4 rounded-2xl bg-black/[0.03] p-4 text-sm text-black/80">
-        <p className="font-medium text-black">Accepted plan</p>
-        <p className="mt-1">{output.acceptedPlanTitle}</p>
+          <div className="spark-step" style={{ background: "var(--color-surface-muted)" }}>
+            <strong>Accepted plan:</strong> {output.acceptedPlanTitle}
+          </div>
+
+          <p className="spark-created-at">Accepted at {new Date(output.acceptedAt).toLocaleString()}</p>
+          <p className="spark-created-at">Total accepted matches: {output.totalAcceptedMatches}</p>
+        </motion.section>
       </div>
-
-      <p className="mt-4 text-xs text-black/55">Accepted at {new Date(output.acceptedAt).toLocaleString()}</p>
-      <p className="mt-1 text-xs text-black/55">
-        Next step: handoff to dating app. Total accepted matches: {output.totalAcceptedMatches}.
-      </p>
     </main>
   );
 }

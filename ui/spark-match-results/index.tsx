@@ -1,6 +1,6 @@
 import { createRoot } from "react-dom/client";
 import { useMemo, useState, type CSSProperties } from "react";
-import { Button } from "@openai/apps-sdk-ui/components/Button";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useWidgetProps } from "../hooks/use-widget-props";
 import "./styles.css";
 import type { MatchBreakdown, SparkMatch, SparkMatchToolOutput } from "./types";
@@ -13,10 +13,17 @@ const dimensions: Array<{ key: keyof MatchBreakdown; label: string }> = [
   { key: "curiosity", label: "Curiosity" },
 ];
 
+function bestTraitLabel(match: SparkMatch): string {
+  const sorted = [...dimensions].sort(
+    (left, right) => match.breakdown[right.key] - match.breakdown[left.key],
+  );
+  return sorted[0]?.label ?? "Compatibility";
+}
+
 function RadarGraph({ breakdown }: { breakdown: MatchBreakdown }) {
-  const points = useMemo(() => {
-    const radius = 70;
-    const center = 80;
+  const polygonPoints = useMemo(() => {
+    const radius = 72;
+    const center = 82;
 
     return dimensions
       .map((dimension, index) => {
@@ -29,103 +36,179 @@ function RadarGraph({ breakdown }: { breakdown: MatchBreakdown }) {
       .join(" ");
   }, [breakdown]);
 
-  const rings = [20, 40, 60, 80];
+  const rings = [20, 38, 56, 74];
 
   return (
-    <svg viewBox="0 0 160 160" className="h-40 w-40">
+    <svg viewBox="0 0 164 164" width="184" height="184" aria-label="Compatibility radar graph">
       {rings.map((ring) => (
         <circle
           key={ring}
-          cx="80"
-          cy="80"
+          cx="82"
+          cy="82"
           r={ring}
           fill="none"
-          stroke="rgba(35,57,91,0.14)"
+          stroke="var(--color-text-subtle)"
+          strokeOpacity="0.32"
           strokeWidth="1"
         />
       ))}
+
       {dimensions.map((dimension, index) => {
         const angle = (Math.PI * 2 * index) / dimensions.length - Math.PI / 2;
-        const x = 80 + Math.cos(angle) * 80;
-        const y = 80 + Math.sin(angle) * 80;
+        const x = 82 + Math.cos(angle) * 76;
+        const y = 82 + Math.sin(angle) * 76;
 
         return (
           <line
             key={dimension.key}
-            x1="80"
-            y1="80"
+            x1="82"
+            y1="82"
             x2={x}
             y2={y}
-            stroke="rgba(35,57,91,0.18)"
+            stroke="var(--color-text-subtle)"
+            strokeOpacity="0.35"
             strokeWidth="1"
           />
         );
       })}
-      <polygon points={points} fill="rgba(95,211,188,0.38)" stroke="#ff6b9d" strokeWidth="2" />
+
+      <polygon
+        points={polygonPoints}
+        fill="var(--color-accent-mint)"
+        fillOpacity="0.26"
+        stroke="var(--color-accent-warm)"
+        strokeWidth="2"
+      />
     </svg>
   );
 }
 
-function CompatibilityBars({ breakdown }: { breakdown: MatchBreakdown }) {
+function CardMetrics({ breakdown }: { breakdown: MatchBreakdown }) {
   return (
-    <div className="space-y-2.5">
+    <div className="spark-metric-grid">
       {dimensions.map((dimension) => (
-        <div key={dimension.key}>
-          <div className="mb-1 flex items-center justify-between text-xs font-medium text-[var(--spark-trust)]/80">
-            <span>{dimension.label}</span>
-            <span>{breakdown[dimension.key]}</span>
-          </div>
-          <div className="spark-bar-track">
-            <div className="spark-bar-fill" style={{ width: `${breakdown[dimension.key]}%` }} />
-          </div>
+        <div key={dimension.key} className="spark-metric-pill">
+          <span className="spark-metric-label">{dimension.label}</span>
+          <span className="spark-metric-value">{breakdown[dimension.key]}</span>
         </div>
       ))}
     </div>
   );
 }
 
-function MatchCard({
+function SparkCard({
   match,
-  onSelect,
-  delay,
+  isWhyOpen,
+  isSelected,
+  onAccept,
+  onToggleWhy,
+  disableActions,
+  reduceMotion,
+  revealDelayMs,
 }: {
   match: SparkMatch;
-  onSelect: () => void;
-  delay: number;
+  isWhyOpen: boolean;
+  isSelected: boolean;
+  onAccept: () => void;
+  onToggleWhy: () => void;
+  disableActions: boolean;
+  reduceMotion: boolean;
+  revealDelayMs: number;
 }) {
+  const bestTrait = bestTraitLabel(match);
+
   return (
-    <article
-      className="spark-glass spark-hero-enter flex min-w-[280px] max-w-[340px] flex-col gap-4 rounded-3xl p-4"
-      style={{ animationDelay: `${delay}ms` }}
+    <motion.article
+      className="spark-card spark-motion"
+      initial={reduceMotion ? false : { opacity: 0, y: 10, scale: 0.96 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={
+        reduceMotion
+          ? { duration: 0 }
+          : {
+              duration: 0.3,
+              delay: revealDelayMs / 1000,
+              ease: [0.22, 1, 0.36, 1],
+            }
+      }
+      style={isSelected ? ({ boxShadow: "0 14px 34px rgb(255 126 107 / 28%)" } as CSSProperties) : undefined}
+      aria-live="polite"
     >
-      <div className="flex items-center justify-between gap-4">
+      <div className="spark-card-head">
         <div>
-          <p className="text-lg font-semibold text-[var(--spark-trust)]">{match.displayName}</p>
-          <p className="text-xs text-[var(--spark-trust)]/75">{match.ageRange} · {match.city}</p>
+          <p className="spark-name">{match.displayName}</p>
+          <p className="spark-meta">
+            {match.ageRange} · {match.city}
+          </p>
         </div>
-        <div className="spark-ring" style={{ ["--score" as const]: match.overallScore } as CSSProperties}>
-          <span className="spark-ring-value">{match.overallScore}</span>
+
+        <div className="spark-score-ring" style={{ ["--score" as const]: match.overallScore } as CSSProperties}>
+          <div style={{ position: "relative", zIndex: 1, textAlign: "center" }}>
+            <p className="spark-score-value">{match.overallScore}</p>
+            <p className="spark-score-label">Overall</p>
+          </div>
         </div>
       </div>
 
-      <p className="text-sm leading-relaxed text-[var(--spark-trust)]/90">{match.tagline}</p>
+      <CardMetrics breakdown={match.breakdown} />
 
-      <CompatibilityBars breakdown={match.breakdown} />
-
-      <div className="rounded-2xl bg-white/45 p-3 text-sm text-[var(--spark-trust)]">
-        <p className="font-medium">Why this could work</p>
-        <p className="mt-1 text-[var(--spark-trust)]/85">{match.reasons[0]}</p>
+      <div className="spark-card-body">
+        <p>{match.reasons[0]}</p>
       </div>
 
-      <Button color="primary" variant="solid" size="md" onClick={onSelect}>
-        View Spark Plan
-      </Button>
-    </article>
+      <div className="spark-badges">
+        <span className="spark-badge spark-badge-best">Best shared trait: {bestTrait}</span>
+        {match.interests.slice(0, 2).map((interest) => (
+          <span key={interest} className="spark-badge">
+            Shared vibe: {interest}
+          </span>
+        ))}
+      </div>
+
+      <AnimatePresence>
+        {isWhyOpen && (
+          <motion.div
+            initial={reduceMotion ? false : { opacity: 0, height: 0 }}
+            animate={reduceMotion ? { opacity: 1, height: "auto" } : { opacity: 1, height: "auto" }}
+            exit={reduceMotion ? { opacity: 0 } : { opacity: 0, height: 0 }}
+            className="spark-card-body"
+          >
+            <p style={{ fontWeight: 700, marginBottom: "6px" }}>Why this match works</p>
+            <ul style={{ margin: 0, paddingLeft: "16px", display: "grid", gap: "4px" }}>
+              {match.reasons.map((reason) => (
+                <li key={reason}>{reason}</li>
+              ))}
+            </ul>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div className="spark-card-actions">
+        <button
+          type="button"
+          className="spark-btn spark-btn-primary"
+          onClick={onAccept}
+          disabled={disableActions}
+          aria-label={`Accept ${match.displayName} and review plan`}
+        >
+          Accept
+        </button>
+        <button
+          type="button"
+          className="spark-btn spark-btn-secondary"
+          onClick={onToggleWhy}
+          disabled={disableActions}
+          aria-expanded={isWhyOpen}
+        >
+          {isWhyOpen ? "Hide why" : "View why"}
+        </button>
+      </div>
+    </motion.article>
   );
 }
 
 function App() {
-  const widgetOutput = useWidgetProps<SparkMatchToolOutput>({
+  const output = useWidgetProps<SparkMatchToolOutput>({
     matchSessionId: "",
     viewerProfile: {
       id: "",
@@ -136,17 +219,20 @@ function App() {
     generatedAt: "",
   });
 
+  const reduceMotion = useReducedMotion();
+
   const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null);
+  const [openWhyProfileId, setOpenWhyProfileId] = useState<string | null>(null);
   const [isAccepting, setIsAccepting] = useState(false);
   const [acceptedAt, setAcceptedAt] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const selectedMatch = useMemo(
-    () => widgetOutput.matches.find((match) => match.profileId === selectedProfileId) ?? null,
-    [selectedProfileId, widgetOutput.matches],
+    () => output.matches.find((match) => match.profileId === selectedProfileId) ?? null,
+    [selectedProfileId, output.matches],
   );
 
-  async function handleAccept() {
+  async function acceptPlan() {
     if (!selectedMatch) {
       return;
     }
@@ -156,20 +242,19 @@ function App() {
 
     try {
       if (!window.openai?.callTool) {
-        throw new Error("Tool bridge is unavailable in this host.");
+        throw new Error("Tool bridge unavailable in this host.");
       }
 
       await window.openai.callTool("spark-accept-match", {
-        matchSessionId: widgetOutput.matchSessionId,
-        viewerProfileId: widgetOutput.viewerProfile.id,
+        matchSessionId: output.matchSessionId,
+        viewerProfileId: output.viewerProfile.id,
         selectedProfileId: selectedMatch.profileId,
         acceptedPlanTitle: selectedMatch.sparkPlan.title,
       });
 
       setAcceptedAt(new Date().toISOString());
-    } catch (acceptError) {
-      const message = acceptError instanceof Error ? acceptError.message : "Unable to accept this spark right now.";
-      setError(message);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unable to complete acceptance.");
     } finally {
       setIsAccepting(false);
     }
@@ -178,124 +263,165 @@ function App() {
   const isAccepted = acceptedAt !== null && selectedMatch !== null;
 
   return (
-    <main className="spark-bg relative w-full overflow-hidden rounded-3xl p-4 text-[var(--spark-trust)] sm:p-5">
-      <span className="spark-particle left-[10%] top-[14%]" />
-      <span className="spark-particle left-[58%] top-[8%]" style={{ animationDelay: "1.2s" }} />
-      <span className="spark-particle left-[85%] top-[26%]" style={{ animationDelay: "2.4s" }} />
+    <main className="spark-root relative rounded-[20px] p-4 sm:p-6">
+      {!reduceMotion && (
+        <div className="spark-particles" aria-hidden="true">
+          <span className="spark-particle" />
+          <span className="spark-particle" />
+          <span className="spark-particle" />
+        </div>
+      )}
 
-      <section className="spark-glass spark-hero-enter relative rounded-3xl px-4 py-5 sm:px-6">
-        <p className="text-xs uppercase tracking-[0.16em] text-[var(--spark-trust)]/65">Find a spark</p>
-        <h1 className="mt-2 text-2xl font-semibold text-[var(--spark-trust)] sm:text-[2rem]">
-          A new spark is waiting.
-        </h1>
-        <p className="mt-2 max-w-2xl text-sm leading-relaxed text-[var(--spark-trust)]/85 sm:text-base">
-          Calm energy, real compatibility, and a plan you can actually say yes to.
-        </p>
-      </section>
+      <div className="spark-container">
+        <motion.section
+          className="spark-hero-shell spark-motion"
+          initial={reduceMotion ? false : { opacity: 0, y: 10 }}
+          animate={reduceMotion ? { opacity: 1, y: 0 } : { opacity: 1, y: 0 }}
+          transition={{ duration: 0.28, ease: "easeOut" }}
+        >
+          <div className="spark-hero">
+            <p className="spark-eyebrow">Find a spark</p>
+            <h1 className="spark-title">A new spark is waiting.</h1>
+            <p className="spark-subtitle">
+              Hopeful matches with clear reasons, beautiful presentation, and confidence you can trust.
+            </p>
+            <p className="spark-created-at">
+              Top matches for {output.viewerProfile.displayName || "you"}
+              {output.generatedAt ? ` · updated ${new Date(output.generatedAt).toLocaleTimeString()}` : ""}
+            </p>
+          </div>
+        </motion.section>
 
-      {!isAccepted && !selectedMatch && (
-        <section className="mt-4">
-          <p className="px-1 text-sm text-[var(--spark-trust)]/80">
-            Top matches for {widgetOutput.viewerProfile.displayName || "you"}
-          </p>
+        {!isAccepted && output.matches.length === 0 && (
+          <div className="spark-empty">No matches available yet. Ask ChatGPT to run match discovery again.</div>
+        )}
 
-          {widgetOutput.matches.length === 0 ? (
-            <div className="spark-glass mt-3 rounded-3xl p-6 text-center text-sm text-[var(--spark-trust)]/80">
-              No matches available yet. Ask ChatGPT to run match discovery again.
-            </div>
-          ) : (
-            <div className="mt-3 flex snap-x gap-3 overflow-x-auto pb-2">
-              {widgetOutput.matches.map((match, index) => (
-                <div key={match.profileId} className="snap-start">
-                  <MatchCard
-                    match={match}
-                    delay={index * 90}
-                    onSelect={() => {
-                      setSelectedProfileId(match.profileId);
-                      setError(null);
-                    }}
-                  />
+        {!isAccepted && output.matches.length > 0 && (
+          <section className="spark-card-grid">
+            {output.matches.map((match, index) => (
+              <SparkCard
+                key={match.profileId}
+                match={match}
+                isSelected={selectedProfileId === match.profileId}
+                isWhyOpen={openWhyProfileId === match.profileId}
+                revealDelayMs={index * 60}
+                onAccept={() => {
+                  setSelectedProfileId(match.profileId);
+                  setError(null);
+                }}
+                onToggleWhy={() => {
+                  setOpenWhyProfileId((previous) =>
+                    previous === match.profileId ? null : match.profileId,
+                  );
+                }}
+                disableActions={isAccepting}
+                reduceMotion={Boolean(reduceMotion)}
+              />
+            ))}
+          </section>
+        )}
+
+        {!isAccepted && selectedMatch && (
+          <motion.section
+            className="spark-plan-panel spark-motion"
+            initial={reduceMotion ? false : { opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.24, ease: "easeOut" }}
+          >
+            <p className="spark-eyebrow">Plan review</p>
+            <h2 className="spark-plan-title">{selectedMatch.sparkPlan.title}</h2>
+            <p className="spark-plan-copy">{selectedMatch.sparkPlan.narrative}</p>
+
+            <div className="spark-plan-layout">
+              <div>
+                <div className="spark-step-list">
+                  {selectedMatch.sparkPlan.steps.map((step, index) => (
+                    <div key={step} className="spark-step">
+                      <strong>{index + 1}. </strong>
+                      {step}
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          )}
-        </section>
-      )}
 
-      {!isAccepted && selectedMatch && (
-        <section className="spark-glass mt-4 rounded-3xl p-4 sm:p-5">
-          <p className="text-xs uppercase tracking-[0.12em] text-[var(--spark-trust)]/60">Spark plan review</p>
-          <h2 className="mt-2 text-xl font-semibold text-[var(--spark-trust)]">{selectedMatch.sparkPlan.title}</h2>
-          <p className="mt-3 text-sm leading-relaxed text-[var(--spark-trust)]/90 sm:text-base">
-            {selectedMatch.sparkPlan.narrative}
-          </p>
-
-          <div className="mt-4 grid gap-4 sm:grid-cols-[1fr_auto] sm:items-start">
-            <div>
-              <p className="text-sm font-medium text-[var(--spark-trust)]">Plan outline</p>
-              <ol className="mt-2 space-y-2 text-sm text-[var(--spark-trust)]/85">
-                {selectedMatch.sparkPlan.steps.map((step, index) => (
-                  <li key={step} className="rounded-2xl bg-white/45 px-3 py-2">
-                    <span className="font-semibold">{index + 1}. </span>
-                    {step}
-                  </li>
-                ))}
-              </ol>
-
-              <div className="mt-4 flex gap-2">
-                {selectedMatch.reasons.map((reason) => (
-                  <span key={reason} className="rounded-full bg-white/55 px-3 py-1 text-xs">
-                    {reason}
-                  </span>
-                ))}
+                <div className="spark-mobile-metrics" aria-label="Mobile compatibility metrics">
+                  {dimensions.map((dimension) => (
+                    <div key={dimension.key} className="spark-metric-pill">
+                      <span className="spark-metric-label">{dimension.label}</span>
+                      <span className="spark-metric-value">{selectedMatch.breakdown[dimension.key]}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
+
+              <aside className="spark-chart-shell">
+                <p className="spark-eyebrow" style={{ marginBottom: "8px" }}>
+                  Compatibility map
+                </p>
+                <RadarGraph breakdown={selectedMatch.breakdown} />
+              </aside>
             </div>
 
-            <div className="mx-auto flex w-full max-w-[220px] flex-col items-center rounded-2xl bg-white/48 px-3 py-4">
-              <p className="text-xs uppercase tracking-[0.1em] text-[var(--spark-trust)]/65">Compatibility map</p>
-              <RadarGraph breakdown={selectedMatch.breakdown} />
+            {error && <div className="spark-error">{error}</div>}
+
+            <div className="spark-card-actions">
+              <button
+                type="button"
+                className="spark-btn spark-btn-primary"
+                onClick={acceptPlan}
+                disabled={isAccepting}
+              >
+                {isAccepting ? "Accepting..." : "Accept this plan"}
+              </button>
+              <button
+                type="button"
+                className="spark-btn spark-btn-secondary"
+                onClick={() => {
+                  setSelectedProfileId(null);
+                  setError(null);
+                }}
+                disabled={isAccepting}
+              >
+                Change match
+              </button>
             </div>
-          </div>
+          </motion.section>
+        )}
 
-          {error && <p className="mt-3 text-sm text-rose-700">{error}</p>}
-
-          <div className="mt-4 flex flex-wrap gap-2">
-            <Button
-              color="primary"
-              variant="solid"
-              size="md"
-              onClick={handleAccept}
-              disabled={isAccepting}
-              className="spark-cta-pulse"
-            >
-              {isAccepting ? "Accepting..." : "Accept This Plan"}
-            </Button>
-            <Button
-              color="secondary"
-              variant="ghost"
-              size="md"
-              onClick={() => {
-                setSelectedProfileId(null);
-                setError(null);
-              }}
+        {!isAccepted && selectedMatch && (
+          <div className="spark-sticky-action" aria-live="polite">
+            <div className="spark-sticky-info">
+              <p className="spark-sticky-name">Selected: {selectedMatch.displayName}</p>
+              <p className="spark-sticky-sub">Ready to confirm this spark?</p>
+            </div>
+            <button
+              type="button"
+              className="spark-btn spark-btn-primary"
+              onClick={acceptPlan}
               disabled={isAccepting}
             >
-              Back to matches
-            </Button>
+              {isAccepting ? "Accepting..." : "Accept"}
+            </button>
           </div>
-        </section>
-      )}
+        )}
 
-      {isAccepted && selectedMatch && (
-        <section className="spark-glass mt-4 rounded-3xl p-6 text-center sm:p-7">
-          <p className="text-xs uppercase tracking-[0.18em] text-[var(--spark-trust)]/65">Spark locked</p>
-          <h2 className="mt-2 text-2xl font-semibold text-[var(--spark-trust)]">You said yes to {selectedMatch.displayName}</h2>
-          <p className="mx-auto mt-3 max-w-xl text-sm text-[var(--spark-trust)]/85 sm:text-base">
-            Match accepted successfully. The dating app can now take over and handle deeper first-date planning.
-          </p>
-          <p className="mt-3 text-xs text-[var(--spark-trust)]/65">Accepted at {new Date(acceptedAt).toLocaleString()}</p>
-        </section>
-      )}
+        {isAccepted && selectedMatch && (
+          <motion.section
+            className="spark-confirm-panel spark-motion"
+            initial={reduceMotion ? false : { opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.24, ease: "easeOut" }}
+          >
+            <p className="spark-eyebrow">Spark accepted</p>
+            <h2 className="spark-confirm-title">
+              {output.viewerProfile.displayName} + {selectedMatch.displayName}
+            </h2>
+            <p className="spark-plan-copy">
+              Acceptance recorded. Next step handled by the dating app for full scheduling and logistics.
+            </p>
+            <p className="spark-created-at">Accepted at {new Date(acceptedAt).toLocaleString()}</p>
+          </motion.section>
+        )}
+      </div>
     </main>
   );
 }
