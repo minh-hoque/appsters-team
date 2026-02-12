@@ -2,6 +2,12 @@ import { createRoot } from "react-dom/client";
 import { useMemo, useState, type CSSProperties } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useWidgetProps } from "../hooks/use-widget-props";
+import {
+  createSparkDemoAcceptanceOutput,
+  createSparkDemoMatchesOutput,
+  isSparkDemoModeEnabled,
+  writeSparkDemoAcceptanceOutput,
+} from "../spark-demo-data";
 import "./styles.css";
 import type { MatchBreakdown, SparkMatch, SparkMatchToolOutput } from "./types";
 
@@ -104,7 +110,6 @@ function SparkCard({
   onToggleWhy,
   disableActions,
   reduceMotion,
-  revealDelayMs,
 }: {
   match: SparkMatch;
   isWhyOpen: boolean;
@@ -113,7 +118,6 @@ function SparkCard({
   onToggleWhy: () => void;
   disableActions: boolean;
   reduceMotion: boolean;
-  revealDelayMs: number;
 }) {
   const bestTrait = bestTraitLabel(match);
 
@@ -122,16 +126,12 @@ function SparkCard({
       className="spark-card spark-motion"
       initial={reduceMotion ? false : { opacity: 0, y: 10, scale: 0.96 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={
-        reduceMotion
-          ? { duration: 0 }
-          : {
-              duration: 0.3,
-              delay: revealDelayMs / 1000,
-              ease: [0.22, 1, 0.36, 1],
-            }
+      transition={reduceMotion ? { duration: 0 } : { duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+      style={
+        isSelected
+          ? ({ boxShadow: "0 14px 34px rgb(255 126 107 / 28%)" } as CSSProperties)
+          : undefined
       }
-      style={isSelected ? ({ boxShadow: "0 14px 34px rgb(255 126 107 / 28%)" } as CSSProperties) : undefined}
       aria-live="polite"
     >
       <div className="spark-card-head">
@@ -208,29 +208,76 @@ function SparkCard({
 }
 
 function App() {
+  const demoMode = isSparkDemoModeEnabled();
   const output = useWidgetProps<SparkMatchToolOutput>({
-    matchSessionId: "",
-    viewerProfile: {
-      id: "",
-      displayName: "",
-      tagline: "",
-    },
-    matches: [],
-    generatedAt: "",
+    ...(demoMode
+      ? createSparkDemoMatchesOutput()
+      : {
+          matchSessionId: "",
+          viewerProfile: {
+            id: "",
+            displayName: "",
+            tagline: "",
+          },
+          matches: [],
+          generatedAt: "",
+        }),
   });
 
   const reduceMotion = useReducedMotion();
 
   const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null);
   const [openWhyProfileId, setOpenWhyProfileId] = useState<string | null>(null);
+  const [activeMatchIndex, setActiveMatchIndex] = useState(0);
+  const [swipeDirection, setSwipeDirection] = useState<-1 | 1>(1);
   const [isAccepting, setIsAccepting] = useState(false);
   const [acceptedAt, setAcceptedAt] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const totalMatches = output.matches.length;
+  const currentMatchIndex = totalMatches > 0 ? ((activeMatchIndex % totalMatches) + totalMatches) % totalMatches : 0;
+  const currentMatch = output.matches[currentMatchIndex] ?? null;
 
   const selectedMatch = useMemo(
     () => output.matches.find((match) => match.profileId === selectedProfileId) ?? null,
     [selectedProfileId, output.matches],
   );
+
+  function resetSelectionState() {
+    setSelectedProfileId(null);
+    setOpenWhyProfileId(null);
+    setError(null);
+  }
+
+  function goToPreviousMatch() {
+    if (totalMatches <= 1) {
+      return;
+    }
+    setSwipeDirection(-1);
+    setActiveMatchIndex((previous) => (previous - 1 + totalMatches) % totalMatches);
+    resetSelectionState();
+  }
+
+  function goToNextMatch() {
+    if (totalMatches <= 1) {
+      return;
+    }
+    setSwipeDirection(1);
+    setActiveMatchIndex((previous) => (previous + 1) % totalMatches);
+    resetSelectionState();
+  }
+
+  function goToMatch(index: number) {
+    if (totalMatches === 0) {
+      return;
+    }
+    const normalizedIndex = ((index % totalMatches) + totalMatches) % totalMatches;
+    if (normalizedIndex === currentMatchIndex) {
+      return;
+    }
+    setSwipeDirection(normalizedIndex > currentMatchIndex ? 1 : -1);
+    setActiveMatchIndex(normalizedIndex);
+    resetSelectionState();
+  }
 
   async function acceptPlan() {
     if (!selectedMatch) {
@@ -241,6 +288,27 @@ function App() {
     setError(null);
 
     try {
+      if (demoMode) {
+        const acceptedAt = new Date().toISOString();
+        writeSparkDemoAcceptanceOutput({
+          ...createSparkDemoAcceptanceOutput(),
+          acceptedAt,
+          matchSessionId: output.matchSessionId || "demo-session-001",
+          viewerProfile: {
+            id: output.viewerProfile.id || "user-001",
+            displayName: output.viewerProfile.displayName || "Alex",
+          },
+          selectedProfile: {
+            id: selectedMatch.profileId,
+            displayName: selectedMatch.displayName,
+          },
+          acceptedPlanTitle: selectedMatch.sparkPlan.title,
+          totalAcceptedMatches: 1,
+        });
+        setAcceptedAt(acceptedAt);
+        return;
+      }
+
       if (!window.openai?.callTool) {
         throw new Error("Tool bridge unavailable in this host.");
       }
@@ -289,6 +357,7 @@ function App() {
               Top matches for {output.viewerProfile.displayName || "you"}
               {output.generatedAt ? ` · updated ${new Date(output.generatedAt).toLocaleTimeString()}` : ""}
             </p>
+            {demoMode && <p className="spark-created-at">Demo mode enabled for local browser testing.</p>}
           </div>
         </motion.section>
 
@@ -296,28 +365,100 @@ function App() {
           <div className="spark-empty">No matches available yet. Ask ChatGPT to run match discovery again.</div>
         )}
 
-        {!isAccepted && output.matches.length > 0 && (
+        {!isAccepted && currentMatch && (
           <section className="spark-card-grid">
-            {output.matches.map((match, index) => (
-              <SparkCard
-                key={match.profileId}
-                match={match}
-                isSelected={selectedProfileId === match.profileId}
-                isWhyOpen={openWhyProfileId === match.profileId}
-                revealDelayMs={index * 60}
-                onAccept={() => {
-                  setSelectedProfileId(match.profileId);
-                  setError(null);
-                }}
-                onToggleWhy={() => {
-                  setOpenWhyProfileId((previous) =>
-                    previous === match.profileId ? null : match.profileId,
-                  );
-                }}
-                disableActions={isAccepting}
-                reduceMotion={Boolean(reduceMotion)}
-              />
-            ))}
+            <div className="spark-match-nav" aria-label="Match carousel controls">
+              <button
+                type="button"
+                className="spark-btn spark-btn-secondary spark-nav-btn"
+                onClick={goToPreviousMatch}
+                disabled={isAccepting || totalMatches <= 1}
+                aria-label="Show previous match"
+              >
+                Previous
+              </button>
+              <p className="spark-match-position">
+                Match {currentMatchIndex + 1} of {totalMatches}
+              </p>
+              <button
+                type="button"
+                className="spark-btn spark-btn-secondary spark-nav-btn"
+                onClick={goToNextMatch}
+                disabled={isAccepting || totalMatches <= 1}
+                aria-label="Show next match"
+              >
+                Next
+              </button>
+            </div>
+
+            <div className="spark-card-carousel-shell">
+              <AnimatePresence initial={false} mode="wait" custom={swipeDirection}>
+                <motion.div
+                  key={currentMatch.profileId}
+                  className="spark-card-carousel-item"
+                  custom={swipeDirection}
+                  initial={reduceMotion ? false : { opacity: 0, x: swipeDirection > 0 ? 44 : -44 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={reduceMotion ? { opacity: 0 } : { opacity: 0, x: swipeDirection > 0 ? -44 : 44 }}
+                  transition={
+                    reduceMotion
+                      ? { duration: 0 }
+                      : {
+                          duration: 0.26,
+                          ease: [0.22, 1, 0.36, 1],
+                        }
+                  }
+                  drag={totalMatches > 1 ? "x" : false}
+                  dragConstraints={{ left: 0, right: 0 }}
+                  dragElastic={0.24}
+                  onDragEnd={(_, info) => {
+                    if (info.offset.x <= -88 || info.velocity.x < -550) {
+                      goToNextMatch();
+                      return;
+                    }
+                    if (info.offset.x >= 88 || info.velocity.x > 550) {
+                      goToPreviousMatch();
+                    }
+                  }}
+                >
+                  <SparkCard
+                    key={currentMatch.profileId}
+                    match={currentMatch}
+                    isSelected={selectedProfileId === currentMatch.profileId}
+                    isWhyOpen={openWhyProfileId === currentMatch.profileId}
+                    onAccept={() => {
+                      setSelectedProfileId(currentMatch.profileId);
+                      setError(null);
+                    }}
+                    onToggleWhy={() => {
+                      setOpenWhyProfileId((previous) =>
+                        previous === currentMatch.profileId ? null : currentMatch.profileId,
+                      );
+                    }}
+                    disableActions={isAccepting}
+                    reduceMotion={Boolean(reduceMotion)}
+                  />
+                </motion.div>
+              </AnimatePresence>
+            </div>
+
+            <div className="spark-match-dots" aria-label="Jump to a specific match">
+              {output.matches.map((match, index) => (
+                <button
+                  key={match.profileId}
+                  type="button"
+                  className={`spark-match-dot ${index === currentMatchIndex ? "is-active" : ""}`}
+                  onClick={() => goToMatch(index)}
+                  disabled={isAccepting}
+                  aria-label={`Show match ${index + 1}: ${match.displayName}`}
+                  aria-current={index === currentMatchIndex ? "true" : undefined}
+                />
+              ))}
+            </div>
+
+            <p className="spark-swipe-hint">
+              Swipe left or right to browse matches, or use Previous/Next.
+            </p>
           </section>
         )}
 
@@ -419,6 +560,11 @@ function App() {
               Acceptance recorded. Next step handled by the dating app for full scheduling and logistics.
             </p>
             <p className="spark-created-at">Accepted at {new Date(acceptedAt).toLocaleString()}</p>
+            {demoMode && (
+              <p className="spark-created-at">
+                Open acceptance widget: <code>/assets/spark-acceptance.html?demo=1</code>
+              </p>
+            )}
           </motion.section>
         )}
       </div>

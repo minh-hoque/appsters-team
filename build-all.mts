@@ -152,7 +152,9 @@ console.groupEnd();
 
 console.log("new hash: ", h);
 
-const defaultBaseUrl = "http://localhost:8000/assets";
+const envPort = Number(process.env.MCP_PORT ?? process.env.PORT ?? 8000);
+const fallbackPort = Number.isFinite(envPort) && envPort > 0 ? envPort : 8000;
+const defaultBaseUrl = `http://localhost:${fallbackPort}/assets`;
 const baseUrlCandidate = process.env.BASE_URL?.trim() ?? "";
 const baseUrlRaw = baseUrlCandidate.length > 0 ? baseUrlCandidate : defaultBaseUrl;
 const normalizedBaseUrl = baseUrlRaw.replace(/\/+$/, "") || defaultBaseUrl;

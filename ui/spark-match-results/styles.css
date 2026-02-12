@@ -1,17 +1,21 @@
 @import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Manrope:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap");
 
 :root {
-  --color-bg: #fff6ec;
-  --color-text-primary: #1f2a44;
-  --color-accent-warm: #ff7e6b;
-  --color-accent-mint: #48c9b0;
-  --color-surface-glass: #ffffffcc;
-  --color-surface-muted: #f7ede3;
+  --color-bg: #f7f1e7;
+  --color-bg-wash: #efe4d6;
+  --color-surface-muted: #efe5d9;
+  --color-surface-elevated: #fffcf7;
 
-  --color-border-glass: #ffffff80;
-  --color-shadow-soft: rgb(31 42 68 / 12%);
-  --color-text-muted: rgb(31 42 68 / 72%);
-  --color-text-subtle: rgb(31 42 68 / 56%);
+  --color-text-primary: #1f2c3f;
+  --color-text-muted: rgb(31 44 63 / 76%);
+  --color-text-subtle: rgb(31 44 63 / 58%);
+
+  --color-accent-warm: #de6a4f;
+  --color-accent-mint: #2a9d8f;
+
+  --color-border-glass: rgb(255 255 255 / 56%);
+  --color-border-soft: rgb(31 44 63 / 12%);
+  --color-shadow-soft: rgb(17 24 39 / 10%);
 
   --font-display: "Fraunces", Georgia, serif;
   --font-body: "Manrope", "Helvetica Neue", Arial, sans-serif;
@@ -35,7 +39,7 @@
   --radius-card: 20px;
   --radius-pill: 999px;
 
-  --shadow-card: 0 10px 30px var(--color-shadow-soft);
+  --shadow-card: 0 14px 30px var(--color-shadow-soft);
   --focus-ring: 2px solid var(--color-accent-mint);
 
   --timing-fast: 160ms;
@@ -45,21 +49,50 @@
 .spark-root {
   font-family: var(--font-body);
   color: var(--color-text-primary);
-  background: var(--color-bg);
+  background: linear-gradient(180deg, var(--color-bg) 0%, var(--color-bg-wash) 100%);
   position: relative;
+  overflow: hidden;
+}
+
+.spark-root::before,
+.spark-root::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: 999px;
+  filter: blur(2px);
+}
+
+.spark-root::before {
+  width: 340px;
+  height: 340px;
+  left: -120px;
+  top: -120px;
+  background: radial-gradient(circle, rgb(239 180 79 / 18%) 0%, rgb(239 180 79 / 0%) 72%);
+}
+
+.spark-root::after {
+  width: 380px;
+  height: 380px;
+  right: -140px;
+  bottom: -180px;
+  background: radial-gradient(circle, rgb(42 157 143 / 14%) 0%, rgb(42 157 143 / 0%) 70%);
 }
 
 .spark-container {
-  max-width: 960px;
+  max-width: 1180px;
   margin: 0 auto;
   display: grid;
-  gap: var(--space-2);
+  gap: var(--space-3);
+  position: relative;
+  z-index: 1;
 }
 
 .spark-hero-shell {
   position: relative;
   border-radius: var(--radius-card);
-  background: linear-gradient(130deg, #ffc46b 0%, #ff8a8a 52%, #ff6b9d 100%);
+  background: linear-gradient(120deg, #eebc6f 0%, #e9866f 45%, #d76586 100%);
   padding: 2px;
   overflow: hidden;
 }
@@ -93,14 +126,15 @@
   position: relative;
   z-index: 1;
   border-radius: calc(var(--radius-card) - 2px);
-  padding: var(--space-3) var(--space-3) var(--space-2);
-  background: var(--color-surface-glass);
+  padding: var(--space-3);
+  background: linear-gradient(120deg, var(--color-surface-elevated) 0%, #fff8ee 100%);
   border: 1px solid var(--color-border-glass);
   box-shadow: var(--shadow-card);
   backdrop-filter: blur(14px);
 }
 
 .spark-eyebrow {
+  margin: 0;
   font-size: var(--text-14);
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -108,56 +142,137 @@
 }
 
 .spark-title {
-  margin-top: var(--space-1);
+  margin: var(--space-1) 0 0;
   font-family: var(--font-display);
   font-size: clamp(var(--text-28), 4.8vw, var(--text-40));
   line-height: var(--leading-tight);
 }
 
 .spark-subtitle {
-  margin-top: var(--space-1);
+  margin: var(--space-1) 0 0;
   font-size: var(--text-16);
   line-height: var(--leading-relaxed);
   color: var(--color-text-muted);
+  max-width: 78ch;
 }
 
 .spark-card-grid {
   display: grid;
   gap: var(--space-2);
+  align-items: start;
 }
 
 .spark-card {
   border-radius: var(--radius-card);
-  border: 1px solid var(--color-border-glass);
-  background: var(--color-surface-glass);
+  border: 1px solid var(--color-border-soft);
+  background: linear-gradient(180deg, var(--color-surface-elevated) 0%, #fef8f0 100%);
   box-shadow: var(--shadow-card);
   padding: var(--space-2);
   display: grid;
-  gap: var(--space-2);
+  gap: 14px;
+  grid-template-rows: auto auto minmax(108px, auto) auto auto;
+  height: 100%;
+}
+
+.spark-card-carousel-shell {
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.spark-card-carousel-item {
+  touch-action: pan-y;
+}
+
+.spark-match-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.spark-nav-btn {
+  min-height: 40px;
+  padding: 8px 12px;
+  font-size: 0.8rem;
+}
+
+.spark-match-position {
+  margin: 0;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: var(--color-text-muted);
+}
+
+.spark-match-dots {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.spark-match-dot {
+  width: 10px;
+  height: 10px;
+  border: 1px solid rgb(222 106 79 / 30%);
+  background: rgb(222 106 79 / 14%);
+  border-radius: 999px;
+  cursor: pointer;
+  transition:
+    transform var(--timing-fast),
+    background-color var(--timing-fast),
+    border-color var(--timing-fast);
+}
+
+.spark-match-dot:hover:not(:disabled) {
+  transform: scale(1.12);
+  background: rgb(222 106 79 / 24%);
+}
+
+.spark-match-dot.is-active {
+  width: 26px;
+  background: linear-gradient(90deg, var(--color-accent-warm) 0%, #f08b6d 100%);
+  border-color: rgb(222 106 79 / 48%);
+}
+
+.spark-match-dot:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.spark-swipe-hint {
+  margin: 0 auto;
+  font-size: 0.8rem;
+  color: var(--color-text-subtle);
 }
 
 .spark-card-head {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: var(--space-2);
+  min-height: 102px;
 }
 
 .spark-name {
+  margin: 0;
   font-size: var(--text-20);
   font-weight: 700;
   line-height: var(--leading-tight);
 }
 
 .spark-meta {
+  margin: 4px 0 0;
   font-size: var(--text-14);
   color: var(--color-text-subtle);
 }
 
 .spark-score-ring {
   --score: 0;
-  width: 88px;
-  height: 88px;
+  width: 94px;
+  height: 94px;
   border-radius: 999px;
   background:
     conic-gradient(
@@ -174,21 +289,25 @@
   position: absolute;
   inset: 8px;
   border-radius: inherit;
-  background: #fff8f1;
+  background: #fffaf3;
 }
 
 .spark-score-value {
+  margin: 0;
   position: relative;
   z-index: 1;
   font-family: var(--font-numeric);
   font-size: var(--text-20);
   font-weight: 700;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
 }
 
 .spark-score-label {
+  margin: 0;
   position: relative;
   z-index: 1;
-  margin-top: -2px;
+  margin-top: 1px;
   font-size: 0.7rem;
   color: var(--color-text-subtle);
 }
@@ -202,7 +321,7 @@
 .spark-metric-pill {
   border-radius: 14px;
   background: var(--color-surface-muted);
-  border: 1px solid rgb(31 42 68 / 10%);
+  border: 1px solid var(--color-border-soft);
   min-height: 44px;
   padding: 8px 10px;
   display: flex;
@@ -220,40 +339,48 @@
   font-family: var(--font-numeric);
   font-size: 0.95rem;
   font-weight: 700;
+  font-variant-numeric: tabular-nums;
 }
 
 .spark-card-body {
   border-radius: 14px;
-  background: rgb(255 255 255 / 62%);
-  border: 1px solid rgb(31 42 68 / 8%);
+  background: rgb(255 255 255 / 70%);
+  border: 1px solid var(--color-border-soft);
   padding: 10px 12px;
   font-size: var(--text-14);
   line-height: var(--leading-relaxed);
+  min-height: 100px;
+}
+
+.spark-card-body p {
+  margin: 0;
 }
 
 .spark-badges {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
   gap: 8px;
+  align-content: start;
 }
 
 .spark-badge {
+  justify-self: start;
   border-radius: var(--radius-pill);
   padding: 6px 10px;
   font-size: 0.78rem;
-  border: 1px solid rgb(31 42 68 / 13%);
+  border: 1px solid var(--color-border-soft);
   background: rgb(255 255 255 / 70%);
 }
 
 .spark-badge-best {
-  background: rgb(72 201 176 / 18%);
-  border-color: rgb(72 201 176 / 50%);
+  background: rgb(42 157 143 / 16%);
+  border-color: rgb(42 157 143 / 42%);
 }
 
 .spark-card-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+  margin-top: auto;
 }
 
 .spark-btn {
@@ -269,6 +396,7 @@
     background-color var(--timing-fast),
     color var(--timing-fast),
     border-color var(--timing-fast);
+  cursor: pointer;
 }
 
 .spark-btn:disabled {
@@ -279,12 +407,12 @@
 .spark-btn-primary {
   background: var(--color-accent-warm);
   color: #ffffff;
-  box-shadow: 0 6px 18px rgb(255 126 107 / 36%);
+  box-shadow: 0 8px 20px rgb(222 106 79 / 34%);
 }
 
 .spark-btn-primary:hover:not(:disabled) {
   transform: translateY(-1px);
-  box-shadow: 0 10px 22px rgb(255 126 107 / 42%);
+  box-shadow: 0 12px 22px rgb(222 106 79 / 44%);
 }
 
 .spark-btn-primary:active:not(:disabled) {
@@ -292,13 +420,13 @@
 }
 
 .spark-btn-secondary {
-  background: #ffffff;
+  background: rgb(255 255 255 / 76%);
   color: var(--color-text-primary);
-  border-color: rgb(31 42 68 / 20%);
+  border-color: rgb(31 44 63 / 20%);
 }
 
 .spark-btn-secondary:hover:not(:disabled) {
-  background: rgb(255 255 255 / 72%);
+  background: rgb(255 255 255 / 96%);
 }
 
 .spark-btn:focus-visible {
@@ -309,8 +437,8 @@
 .spark-plan-panel,
 .spark-confirm-panel {
   border-radius: var(--radius-card);
-  border: 1px solid var(--color-border-glass);
-  background: var(--color-surface-glass);
+  border: 1px solid var(--color-border-soft);
+  background: linear-gradient(140deg, var(--color-surface-elevated) 0%, #fff8ee 100%);
   box-shadow: var(--shadow-card);
   padding: var(--space-2);
   display: grid;
@@ -337,8 +465,8 @@
 
 .spark-step {
   border-radius: 14px;
-  background: #ffffff;
-  border: 1px solid rgb(31 42 68 / 12%);
+  background: #fffdf9;
+  border: 1px solid var(--color-border-soft);
   padding: 10px 12px;
   font-size: var(--text-14);
   line-height: var(--leading-base);
@@ -346,8 +474,8 @@
 
 .spark-chart-shell {
   border-radius: 14px;
-  border: 1px solid rgb(31 42 68 / 12%);
-  background: #ffffff;
+  border: 1px solid var(--color-border-soft);
+  background: #fffdf9;
   padding: 12px;
   display: grid;
   place-items: center;
@@ -362,8 +490,8 @@
   bottom: var(--space-1);
   z-index: 12;
   border-radius: 16px;
-  border: 1px solid var(--color-border-glass);
-  background: var(--color-surface-glass);
+  border: 1px solid var(--color-border-soft);
+  background: rgb(255 251 245 / 92%);
   backdrop-filter: blur(14px);
   box-shadow: var(--shadow-card);
   padding: 10px;
@@ -390,8 +518,8 @@
 .spark-empty,
 .spark-error {
   border-radius: 14px;
-  border: 1px solid rgb(31 42 68 / 12%);
-  background: rgb(255 255 255 / 70%);
+  border: 1px solid var(--color-border-soft);
+  background: rgb(255 255 255 / 74%);
   padding: 12px;
   font-size: var(--text-14);
 }
@@ -401,6 +529,7 @@
 }
 
 .spark-created-at {
+  margin: 6px 0 0;
   font-size: 0.78rem;
   color: var(--color-text-subtle);
 }
@@ -450,10 +579,6 @@
 }
 
 @media (min-width: 768px) {
-  .spark-card-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
   .spark-plan-layout {
     display: grid;
     grid-template-columns: 1fr 260px;
