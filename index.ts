@@ -12,18 +12,18 @@ const widgetCatalog = createWidgetCatalog(toolDefinitions, assetsDir);
 
 const createServerInstance = () =>
   createMcpServer({
-    name: "pizzaz-node",
+    name: "find-a-spark",
     version: "0.1.0",
     widgetCatalog,
   });
 
-const portEnv = Number(process.env.PORT ?? 8000);
+const portEnv = Number(process.env.PORT ?? process.env.MCP_PORT ?? 8000);
 const port = Number.isFinite(portEnv) ? portEnv : 8000;
 
 startSseServer({
   createMcpServer: createServerInstance,
   port,
-  serverLabel: "Pizzaz MCP server",
+  serverLabel: "Find a Spark MCP server",
   staticAssetsDir: assetsDir,
   staticAssetsPath: "/assets",
 });

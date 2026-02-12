@@ -18,6 +18,10 @@ type Widget = {
 };
 
 type DescriptorMeta = {
+  ui: {
+    resourceUri: string;
+    visibility: ["model", "app"];
+  };
   "openai/outputTemplate": string;
   "openai/toolInvocation/invoking": string;
   "openai/toolInvocation/invoked": string;
@@ -83,6 +87,10 @@ function readWidgetHtml(assetsDir: string, uiName: string): string {
 
 function descriptorMeta(widget: Widget): DescriptorMeta {
   return {
+    ui: {
+      resourceUri: widget.templateUri,
+      visibility: ["model", "app"],
+    },
     "openai/outputTemplate": widget.templateUri,
     "openai/toolInvocation/invoking": widget.invoking,
     "openai/toolInvocation/invoked": widget.invoked,

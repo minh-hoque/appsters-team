@@ -126,36 +126,75 @@ Example starter set:
 
 ## UX Plan (Widget Screens)
 
+### Frontend Style Direction (Locked for MVP)
+- Design language: **Warm Editorial + Soft Glass**.
+- Prioritize decision clarity over decorative effects.
+- Keep one cohesive style system across all widgets.
+
+### Design Tokens
+
+#### Typography
+- Display font: `Fraunces` (headlines only).
+- Body/UI font: `Manrope` (cards, labels, controls).
+- Numeric font: `Space Grotesk` (scores and metric values).
+- Type scale tokens: `14 / 16 / 20 / 28 / 40` with consistent line-height tokens.
+
+#### Color Tokens
+- `--color-bg: #FFF6EC`
+- `--color-text-primary: #1F2A44`
+- `--color-accent-warm: #FF7E6B`
+- `--color-accent-mint: #48C9B0`
+- `--color-surface-glass: #FFFFFFCC`
+- `--color-surface-muted: #F7EDE3`
+- Define colors as CSS variables and avoid ad-hoc hex values in component files.
+
+#### Spacing and Shape
+- Use an 8px spacing grid.
+- Card radius token: `20px`.
+- Tap target minimum: `44px`.
+- Keep primary content width constrained to `960px`.
+
+#### Elevation
+- Card border: `1px solid #FFFFFF80`.
+- Card shadow: `0 10px 30px rgba(31,42,68,.12)`.
+- Reserve heavy blur for hero surfaces only.
+
 ### Hero Treatment (UI + Frontend Style)
 - Emotional goal: evoke hope, excitement, calm trust, and sunset beauty.
 - Visual composition:
-  - Full-width hero header on the match results screen.
+  - Compact full-width hero on the match results screen.
   - Headline: `"A new spark is waiting."`
   - Supporting line: short reassuring copy about discovering meaningful matches.
 - Background:
   - Animated sunrise-sunset gradient: `#FFC46B -> #FF8A8A -> #FF6B9D` on warm base `#FFF6EC`.
-  - Soft ambient light particles moving slowly to create anticipation without visual noise.
+  - Optional ambient particles must remain subtle and never reduce legibility.
 - Foreground container:
   - Glass-style hero panel with soft blur and high readability.
-  - Trust-focused text color `#23395B` and optimism accent `#5FD3BC`.
-  - Large rounded corners (`20-24px`) and gentle shadow.
+  - Text and accent colors must come from design tokens.
+  - Rounded corners (`20px`) and soft elevation.
 - Motion behavior:
-  - Hero fades and rises in on load (`~320ms`).
-  - Match cards reveal with stagger (`~90ms` gap) and spring pop (`0.96 -> 1` scale).
+  - Hero fades and rises in on load (`~280ms`).
+  - Match cards reveal with stagger (`~60ms` gap) and spring pop (`0.96 -> 1` scale).
   - Keep motion smooth and restrained to preserve calm feeling.
 - Frontend implementation notes:
   - Use `framer-motion` for hero entrance and staggered children.
-  - Define hero colors/timings as CSS variables for easy theme tuning.
+  - Define colors, typography, and timings as CSS variables for easy theme tuning.
   - Implement ambient particles with lightweight CSS/SVG animation (no heavy canvas dependency).
   - Maintain strong contrast and responsive layout for mobile and desktop.
+  - Respect `prefers-reduced-motion` and disable decorative motion when enabled.
 
 ### Screen A: Match Results
 - Hero title: "Find a spark"
-- Top 3 cards with:
-  - overall score ring
-  - compatibility bars (values, lifestyle, communication, humor, curiosity)
+- Top 3 cards use a fixed content structure:
+  - identity row
+  - score ring + segmented compatibility metrics
   - short natural-language explanation
-- CTA per card: `Accept`
+  - shared-trait badges (include one "best shared trait" badge)
+  - action row
+- Compatibility metrics: values, lifestyle, communication, humor, curiosity.
+- Each metric must include a text label and numeric value.
+- Primary CTA per card: `Accept`.
+- Secondary action per card: `View why`.
 
 ### Screen B: Acceptance Confirmation
 - Friendly confirmation view:
@@ -164,6 +203,23 @@ Example starter set:
   - timestamp
   - "Next step handled by dating app" message
 - No additional planning controls in MVP.
+
+### Interaction and Control Styling
+- Primary button: high-contrast filled style using accent token.
+- Secondary button: outlined/subtle style using text and surface tokens.
+- Define hover, active, disabled, and focus-visible states for all controls.
+- Focus ring token: `2px` mint outline with offset for keyboard users.
+
+### Mobile-First Rules
+- On narrow screens, convert dense charts to metric pills while preserving labels and values.
+- Keep a sticky bottom action bar for the currently selected profile.
+- Ensure cards remain readable without horizontal scrolling.
+
+### Accessibility Styling Requirements
+- Meet WCAG AA contrast for text and controls.
+- Do not rely on color alone to communicate score quality.
+- Ensure keyboard focus visibility on all interactive elements.
+- Ensure reduced-motion mode provides a calm, non-animated fallback.
 
 ## Validation Checklist
 1. Types:
@@ -178,6 +234,9 @@ Example starter set:
 4. Widget behavior:
 - Results screen renders structured content correctly.
 - Accept action fires write tool call and transitions to confirmation screen.
+- Typography and color usage follow defined design tokens.
+- Reduced-motion preference disables decorative animation.
+- Focus styles and contrast meet accessibility styling requirements.
 
 ## Delivery Sequence
 1. Add data files and validation utilities.

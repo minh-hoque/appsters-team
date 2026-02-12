@@ -1,0 +1,102 @@
+[
+  {
+    "id": "alex-chen",
+    "displayName": "Alex Chen",
+    "tagline": "Design lead who loves climbing and cozy vinyl nights.",
+    "ageRange": "26-32",
+    "city": "San Francisco",
+    "interests": ["rock climbing", "live music", "specialty coffee", "product design", "weekend road trips"],
+    "values": ["growth", "honesty", "curiosity", "kindness"],
+    "communicationStyle": "direct",
+    "lifestyle": "active-balanced",
+    "relationshipIntent": "long-term",
+    "dealBreakers": ["inconsistent communication", "dishonesty", "smoking"],
+    "traits": {
+      "humor": 74,
+      "curiosity": 88,
+      "adventure": 82,
+      "calm": 63,
+      "planning": 76
+    }
+  },
+  {
+    "id": "maya-rivera",
+    "displayName": "Maya Rivera",
+    "tagline": "Art lover with a soft spot for sunset walks and deep talks.",
+    "ageRange": "25-31",
+    "city": "San Francisco",
+    "interests": ["gallery hopping", "brunch spots", "photography", "travel planning", "sunset walks"],
+    "values": ["empathy", "creativity", "trust", "growth"],
+    "communicationStyle": "expressive",
+    "lifestyle": "social-balanced",
+    "relationshipIntent": "long-term",
+    "dealBreakers": ["rudeness", "emotional unavailability"],
+    "traits": {
+      "humor": 79,
+      "curiosity": 85,
+      "adventure": 71,
+      "calm": 77,
+      "planning": 72
+    }
+  },
+  {
+    "id": "noah-patel",
+    "displayName": "Noah Patel",
+    "tagline": "Thoughtful cook, board-game strategist, and trail day regular.",
+    "ageRange": "27-34",
+    "city": "Oakland",
+    "interests": ["home cooking", "board games", "hiking", "podcasts", "farmers markets"],
+    "values": ["stability", "humor", "kindness", "family"],
+    "communicationStyle": "thoughtful",
+    "lifestyle": "homey-active",
+    "relationshipIntent": "serious",
+    "dealBreakers": ["chronic lateness", "disrespect"],
+    "traits": {
+      "humor": 83,
+      "curiosity": 74,
+      "adventure": 69,
+      "calm": 85,
+      "planning": 82
+    }
+  },
+  {
+    "id": "zoe-kim",
+    "displayName": "Zoe Kim",
+    "tagline": "Playful founder-energy with pilates mornings and indie film nights.",
+    "ageRange": "24-30",
+    "city": "San Francisco",
+    "interests": ["indie films", "pilates", "startup demos", "street food", "city photography"],
+    "values": ["ambition", "authenticity", "fun", "learning"],
+    "communicationStyle": "playful",
+    "lifestyle": "fast-social",
+    "relationshipIntent": "exploring-serious",
+    "dealBreakers": ["negativity", "control behavior"],
+    "traits": {
+      "humor": 88,
+      "curiosity": 81,
+      "adventure": 86,
+      "calm": 58,
+      "planning": 67
+    }
+  },
+  {
+    "id": "liam-brooks",
+    "displayName": "Liam Brooks",
+    "tagline": "Museum-date fan with jazz playlists and calm confidence.",
+    "ageRange": "28-35",
+    "city": "Berkeley",
+    "interests": ["jazz", "museums", "film photography", "bookstores", "espresso bars"],
+    "values": ["loyalty", "depth", "respect", "curiosity"],
+    "communicationStyle": "calm",
+    "lifestyle": "steady-curious",
+    "relationshipIntent": "long-term",
+    "dealBreakers": ["dishonesty", "aggressive behavior"],
+    "traits": {
+      "humor": 68,
+      "curiosity": 90,
+      "adventure": 62,
+      "calm": 91,
+      "planning": 78
+    }
+  }
+]

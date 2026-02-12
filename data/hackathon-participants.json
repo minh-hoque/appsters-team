@@ -1,0 +1,548 @@
+{
+  "generated_at": "2026-02-12T22:32:35.458Z",
+  "source": "user_provided_hackathon_email_list",
+  "web_search_used": false,
+  "note": "Real-person dating profile generation is intentionally skipped; this file only normalizes provided contact entries.",
+  "participants": [
+    {
+      "name": "Aarti Bagul",
+      "email": "aarti@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Annika Brundyn",
+      "email": "abrundyn@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Kevin Alwell",
+      "email": "alwellkevin@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Andrew Ginns",
+      "email": "andrewg@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Ankur Kumar",
+      "email": "ankurk@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Anoop Kotha",
+      "email": "anoop@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Anurag Sakhamuri",
+      "email": "anurag@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Arjun Gupta",
+      "email": "arjun.gupta@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Benedict Kerres",
+      "email": "benk@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Brian Fioca",
+      "email": "bfioca@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Bill Chen",
+      "email": "billchen@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Bonnie Chatterjee",
+      "email": "bonnie@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Brian Mgrdichian",
+      "email": "brianm@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Carter Mcclellan",
+      "email": "carter@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Casper van Langen",
+      "email": "casper@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Celine Hajjar",
+      "email": "celine@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Charlie Weems",
+      "email": "charlie@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": null,
+      "email": "charu@openai.com",
+      "profile_status": "not_generated",
+      "reason": "Name missing in source list and no consent-based profile data provided."
+    },
+    {
+      "name": "Chelsea Hu",
+      "email": "chelseahu@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Conor Meng",
+      "email": "conormeng@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Danial Mirza",
+      "email": "danial@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Dave Leo",
+      "email": "daveleo@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Dominic Bavaro",
+      "email": "dbavaro@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Derek Feriancek",
+      "email": "derekf@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Derrick Choi",
+      "email": "derrickchoi@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Danny Wigg",
+      "email": "dwigg@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Eric Buras",
+      "email": "eburas@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Emre Okcular",
+      "email": "emre@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Kevin Gladstone",
+      "email": "gladstone@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Glory Jain",
+      "email": "glory@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Harsh Jain",
+      "email": "harsh@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Henry Broomfield",
+      "email": "hb@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Hiroaki Towata",
+      "email": "htowata@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Immanuel Schwall",
+      "email": "immanuel@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Shuhei Ishida",
+      "email": "ishida@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Jaewon Lee",
+      "email": "jaewonlee@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Jeremy Baum",
+      "email": "jeremybaum@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Josh Hall",
+      "email": "jhall@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Jonathan Field",
+      "email": "jonathan.field@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": null,
+      "email": "jordanellis@openai.com",
+      "profile_status": "not_generated",
+      "reason": "Name missing in source list and no consent-based profile data provided."
+    },
+    {
+      "name": "Justin Pao",
+      "email": "jpao@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Juston Forte",
+      "email": "juston@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Kathy Lau",
+      "email": "kathylau@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Kelsey Pedersen",
+      "email": "kelseypedersen@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Kevin Leneway",
+      "email": "kleneway@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Yukako Kunita",
+      "email": "kunita@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Lori French",
+      "email": "lori@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Louis Bandelier",
+      "email": "louis.bandelier@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Mary Sha",
+      "email": "mary.sha@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Marc Handkan",
+      "email": "mhandkan@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Maximilian Hudlberger",
+      "email": "mhudlberger@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Mitch Welzen",
+      "email": "mitchwelzen@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Moustafa Elhadary",
+      "email": "moustafa@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Michael Phelan",
+      "email": "mp@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Mandeep Singh",
+      "email": "msingh@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": null,
+      "email": "naren@openai.com",
+      "profile_status": "not_generated",
+      "reason": "Name missing in source list and no consent-based profile data provided."
+    },
+    {
+      "name": "Nikhil Srivastava",
+      "email": "nikhils@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Nimu Sidhu",
+      "email": "nimus@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Neil Saigal",
+      "email": "nsaigal@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Nishanth Singaraju",
+      "email": "nsingaraju@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Pierre-Antoine \"pap\" Porte",
+      "email": "pap@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Patrick Hundal",
+      "email": "phundal@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Prashant Mital",
+      "email": "prashant@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Rahul Sharma",
+      "email": "rahuls@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Raj Narayan",
+      "email": "rajn@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Raj Pathak",
+      "email": "rajpathak@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Robin Koenig",
+      "email": "rkoenig@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Robert Tinn",
+      "email": "roberttinn@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Rohan Kharwadkar",
+      "email": "rohan.kharwadkar@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Salil Sethi",
+      "email": "salil@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Samarth Madduru",
+      "email": "samarth@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Masami \"samy\" Mizukoshi",
+      "email": "samy@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Shikhar Kwatra",
+      "email": "shikhar@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Shun Tsuruno",
+      "email": "stsuruno@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Stuart McMeechan",
+      "email": "stuart@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Sun Weiran",
+      "email": "sun.weiran@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Tabarak Khan",
+      "email": "tabarak@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": null,
+      "email": "theophile@openai.com",
+      "profile_status": "not_generated",
+      "reason": "Name missing in source list and no consent-based profile data provided."
+    },
+    {
+      "name": "Thomas Li",
+      "email": "thli@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Teodora Musatoiu",
+      "email": "tmusatoiu@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Toki Sherbakov",
+      "email": "toki@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Tom Pakeman",
+      "email": "tompakeman@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Vignesh Ramesh",
+      "email": "vignesh@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Vijay Bhagat",
+      "email": "vijay@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Vedant Mathur",
+      "email": "vmathur@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Wulfie Bain",
+      "email": "wulfie@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Ying Jiang",
+      "email": "yingjiang@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Yiren Lu",
+      "email": "yiren@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Yixin Jiang",
+      "email": "yixin@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    },
+    {
+      "name": "Yogi Pillay",
+      "email": "yogi@openai.com",
+      "profile_status": "not_generated",
+      "reason": "No consent-based, self-submitted profile data provided."
+    }
+  ]
+}
