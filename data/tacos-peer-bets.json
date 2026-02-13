@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "updatedAtIso": "2026-02-13T18:09:42.075Z",
+  "requests": [
+    {
+      "id": "peerbet-1771006182075-ifxk0b",
+      "fromId": "swag_seeker",
+      "toId": "anurag",
+      "stakeTacos": 200,
+      "terms": "Who creates the most skill",
+      "createdAtIso": "2026-02-13T18:09:42.075Z",
+      "delivery": {
+        "statusCode": 202,
+        "status": "sent",
+        "detail": "Queued in anurag's inbox."
+      }
+    }
+  ]
+}
