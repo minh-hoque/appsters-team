@@ -81,6 +81,9 @@ for (const file of entries) {
   const virtualId = `\0virtual-entry:${entryAbs}`;
 
   const createConfig = (): InlineConfig => ({
+    // Emit asset URLs relative to the widget entry script. This keeps image/font
+    // imports working when widgets are hosted under a subpath like /assets.
+    base: "./",
     plugins: [
       wrapEntryPlugin(virtualId, entryAbs, cssToInclude),
       tailwindcss(),
