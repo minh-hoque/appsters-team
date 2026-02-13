@@ -283,7 +283,7 @@ function App() {
       return "Ending reached. Restart to explore a different branch.";
     }
 
-    return "Click anywhere on the scene, or use a highlighted hotspot.";
+    return "";
   }, [storyOutput]);
 
   return (
@@ -292,9 +292,6 @@ function App() {
         <div className="flex items-center justify-between border-b border-black/10 bg-[#faf7f2] px-4 py-3">
           <div>
             <h1 className="text-base font-semibold text-black">Deja Vu Interactive Story</h1>
-            <p className="text-xs text-black/60">
-              {storyOutput?.progress.step ?? 0}/{storyOutput?.progress.total ?? 0} frames explored
-            </p>
           </div>
           <Button
             color="secondary"
@@ -349,7 +346,7 @@ function App() {
           <p className="text-sm leading-6 text-black/80">
             {storyOutput?.frame.narration ?? "Preparing the first story frame..."}
           </p>
-          <p className="text-xs text-black/60">{transitionHint}</p>
+          {transitionHint ? <p className="text-xs text-black/60">{transitionHint}</p> : null}
 
           {errorMessage ? (
             <p className="rounded-md border border-red-300 bg-red-50 px-3 py-2 text-xs text-red-700">

@@ -4,7 +4,7 @@
   "quality": "high",
   "size": "1536x1024",
   "format": "webp",
-  "referenceImagePath": "assets/anurag_real_image.jpeg",
+  "referenceImagePath": "assets/anurag_image_real.jpeg",
   "referenceImageMimeType": "image/jpeg",
   "identityInstruction": "Keep the protagonist visually consistent with the provided reference photo of Anurag across all frames.",
   "styleGuide": "Cinematic realism, natural skin tones, high-detail photography look, believable conference/hotel settings, no text overlay, no watermarks, no logos.",
