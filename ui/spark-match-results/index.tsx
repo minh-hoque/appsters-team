@@ -11,19 +11,46 @@ import {
 import "./styles.css";
 import type { MatchBreakdown, SparkMatch, SparkMatchToolOutput } from "./types";
 
-const dimensions: Array<{ key: keyof MatchBreakdown; label: string }> = [
-  { key: "values", label: "Values" },
-  { key: "lifestyle", label: "Lifestyle" },
-  { key: "communication", label: "Communication" },
-  { key: "humor", label: "Humor" },
-  { key: "curiosity", label: "Curiosity" },
+const dimensions: Array<{ key: keyof MatchBreakdown; label: string; tone: string }> = [
+  { key: "values", label: "Values", tone: "#de6a4f" },
+  { key: "lifestyle", label: "Lifestyle", tone: "#d88924" },
+  { key: "communication", label: "Communication", tone: "#3d8fd0" },
+  { key: "humor", label: "Humor", tone: "#4f8b4a" },
+  { key: "curiosity", label: "Curiosity", tone: "#2a9d8f" },
 ];
 
-function bestTraitLabel(match: SparkMatch): string {
-  const sorted = [...dimensions].sort(
-    (left, right) => match.breakdown[right.key] - match.breakdown[left.key],
-  );
-  return sorted[0]?.label ?? "Compatibility";
+function toOrdinal(value: number): string {
+  const rounded = Math.max(1, Math.min(99, Math.round(value)));
+  const moduloTen = rounded % 10;
+  const moduloHundred = rounded % 100;
+
+  if (moduloTen === 1 && moduloHundred !== 11) {
+    return `${rounded}st`;
+  }
+  if (moduloTen === 2 && moduloHundred !== 12) {
+    return `${rounded}nd`;
+  }
+  if (moduloTen === 3 && moduloHundred !== 13) {
+    return `${rounded}rd`;
+  }
+  return `${rounded}th`;
+}
+
+function getBestTrait(match: SparkMatch) {
+  return [...dimensions]
+    .sort((left, right) => match.breakdown[right.key] - match.breakdown[left.key])
+    .at(0);
+}
+
+function getLowestTrait(match: SparkMatch) {
+  return [...dimensions]
+    .sort((left, right) => match.breakdown[left.key] - match.breakdown[right.key])
+    .at(0);
+}
+
+function getTopMatchPercentage(overallScore: number): string {
+  const topPercent = Math.max(1, 100 - Math.round(overallScore));
+  return `Top ${topPercent}% match`;
 }
 
 function RadarGraph({ breakdown }: { breakdown: MatchBreakdown }) {
@@ -89,15 +116,39 @@ function RadarGraph({ breakdown }: { breakdown: MatchBreakdown }) {
   );
 }
 
-function CardMetrics({ breakdown }: { breakdown: MatchBreakdown }) {
+function CardMetrics({ breakdown, reduceMotion }: { breakdown: MatchBreakdown; reduceMotion: boolean }) {
   return (
-    <div className="spark-metric-grid">
-      {dimensions.map((dimension) => (
-        <div key={dimension.key} className="spark-metric-pill">
-          <span className="spark-metric-label">{dimension.label}</span>
-          <span className="spark-metric-value">{breakdown[dimension.key]}</span>
-        </div>
-      ))}
+    <div className="spark-trait-grid">
+      {dimensions.map((dimension, index) => {
+        const score = breakdown[dimension.key];
+
+        return (
+          <motion.div
+            key={dimension.key}
+            className="spark-trait-card"
+            style={{ ["--trait-tone" as const]: dimension.tone } as CSSProperties}
+            initial={reduceMotion ? false : { opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={reduceMotion ? { duration: 0 } : { duration: 0.24, delay: 0.26 + index * 0.08 }}
+          >
+            <div className="spark-trait-head">
+              <span className="spark-metric-label">{dimension.label}</span>
+              <span className="spark-metric-value">{score}</span>
+            </div>
+            <div
+              className="spark-trait-meter"
+              role="progressbar"
+              aria-label={`${dimension.label} compatibility`}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={score}
+            >
+              <div className="spark-trait-meter-fill" style={{ width: `${score}%` }} />
+            </div>
+            <p className="spark-trait-percentile">{toOrdinal(score)} percentile fit</p>
+          </motion.div>
+        );
+      })}
     </div>
   );
 }
@@ -107,6 +158,7 @@ function SparkCard({
   isWhyOpen,
   isSelected,
   onAccept,
+  onPlanFirstDate,
   onToggleWhy,
   disableActions,
   reduceMotion,
@@ -115,11 +167,23 @@ function SparkCard({
   isWhyOpen: boolean;
   isSelected: boolean;
   onAccept: () => void;
+  onPlanFirstDate: () => void;
   onToggleWhy: () => void;
   disableActions: boolean;
   reduceMotion: boolean;
 }) {
-  const bestTrait = bestTraitLabel(match);
+  const bestTrait = getBestTrait(match);
+  const lowestTrait = getLowestTrait(match);
+
+  const strongestReason =
+    match.reasons[0] ??
+    `Shared ${bestTrait?.label.toLowerCase() ?? "compatibility"} makes this connection feel natural.`;
+  const frictionReason =
+    match.reasons[1] ??
+    `Keep expectations aligned around ${lowestTrait?.label.toLowerCase() ?? "lifestyle"}; this is your lowest shared score.`;
+  const firstDateReason =
+    match.sparkPlan.steps[0] ??
+    `Use ${match.sparkPlan.title.toLowerCase()} as your first date format.`;
 
   return (
     <motion.article
@@ -135,29 +199,41 @@ function SparkCard({
       aria-live="polite"
     >
       <div className="spark-card-head">
-        <div>
+        <motion.div
+          className="spark-card-identity"
+          initial={reduceMotion ? false : { opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={reduceMotion ? { duration: 0 } : { duration: 0.22, delay: 0.06 }}
+        >
           <p className="spark-name">{match.displayName}</p>
           <p className="spark-meta">
             {match.ageRange} · {match.city}
           </p>
-        </div>
+        </motion.div>
 
-        <div className="spark-score-ring" style={{ ["--score" as const]: match.overallScore } as CSSProperties}>
-          <div style={{ position: "relative", zIndex: 1, textAlign: "center" }}>
-            <p className="spark-score-value">{match.overallScore}</p>
-            <p className="spark-score-label">Overall</p>
-          </div>
-        </div>
+        <motion.div
+          className="spark-score-hero"
+          style={{ ["--score" as const]: match.overallScore } as CSSProperties}
+          initial={reduceMotion ? false : { opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={reduceMotion ? { duration: 0 } : { duration: 0.22, delay: 0.16 }}
+        >
+          <p className="spark-score-value">{match.overallScore}</p>
+          <p className="spark-score-label">Overall compatibility</p>
+          <p className="spark-score-percentile">{getTopMatchPercentage(match.overallScore)}</p>
+        </motion.div>
       </div>
 
-      <CardMetrics breakdown={match.breakdown} />
+      <CardMetrics breakdown={match.breakdown} reduceMotion={reduceMotion} />
 
-      <div className="spark-card-body">
-        <p>{match.reasons[0]}</p>
+      <div className="spark-card-body spark-card-summary">
+        <p>{strongestReason}</p>
       </div>
 
       <div className="spark-badges">
-        <span className="spark-badge spark-badge-best">Best shared trait: {bestTrait}</span>
+        <span className="spark-badge spark-badge-best">
+          Best shared trait: {bestTrait?.label ?? "Compatibility"}
+        </span>
         {match.interests.slice(0, 2).map((interest) => (
           <span key={interest} className="spark-badge">
             Shared vibe: {interest}
@@ -167,19 +243,31 @@ function SparkCard({
 
       <AnimatePresence>
         {isWhyOpen && (
-          <motion.div
-            initial={reduceMotion ? false : { opacity: 0, height: 0 }}
-            animate={reduceMotion ? { opacity: 1, height: "auto" } : { opacity: 1, height: "auto" }}
-            exit={reduceMotion ? { opacity: 0 } : { opacity: 0, height: 0 }}
-            className="spark-card-body"
+          <motion.section
+            initial={reduceMotion ? false : { opacity: 0, y: 8 }}
+            animate={reduceMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
+            exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 8 }}
+            transition={reduceMotion ? { duration: 0 } : { duration: 0.2, ease: "easeOut" }}
+            className="spark-insight-panel"
           >
-            <p style={{ fontWeight: 700, marginBottom: "6px" }}>Why this match works</p>
-            <ul style={{ margin: 0, paddingLeft: "16px", display: "grid", gap: "4px" }}>
-              {match.reasons.map((reason) => (
-                <li key={reason}>{reason}</li>
-              ))}
-            </ul>
-          </motion.div>
+            <p className="spark-insight-title">Why this match works</p>
+            <div className="spark-insight-grid">
+              <article className="spark-insight-item">
+                <h3>Shared communication style</h3>
+                <p>{strongestReason}</p>
+              </article>
+              <article className="spark-insight-item">
+                <h3>Potential friction point</h3>
+                <p>
+                  {frictionReason} ({lowestTrait?.label ?? "Lowest trait"}: {lowestTrait ? match.breakdown[lowestTrait.key] : "--"})
+                </p>
+              </article>
+              <article className="spark-insight-item">
+                <h3>Best first-date format</h3>
+                <p>{firstDateReason}</p>
+              </article>
+            </div>
+          </motion.section>
         )}
       </AnimatePresence>
 
@@ -189,13 +277,22 @@ function SparkCard({
           className="spark-btn spark-btn-primary"
           onClick={onAccept}
           disabled={disableActions}
-          aria-label={`Accept ${match.displayName} and review plan`}
+          aria-label={`Accept ${match.displayName}`}
         >
           Accept
         </button>
         <button
           type="button"
-          className="spark-btn spark-btn-secondary"
+          className="spark-btn spark-btn-mint"
+          onClick={onPlanFirstDate}
+          disabled={disableActions}
+          aria-label={`Plan first date with ${match.displayName}`}
+        >
+          Plan first date
+        </button>
+        <button
+          type="button"
+          className="spark-btn spark-btn-tertiary"
           onClick={onToggleWhy}
           disabled={disableActions}
           aria-expanded={isWhyOpen}
@@ -231,6 +328,7 @@ function App() {
   const [activeMatchIndex, setActiveMatchIndex] = useState(0);
   const [swipeDirection, setSwipeDirection] = useState<-1 | 1>(1);
   const [isAccepting, setIsAccepting] = useState(false);
+  const [acceptedProfileId, setAcceptedProfileId] = useState<string | null>(null);
   const [acceptedAt, setAcceptedAt] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const totalMatches = output.matches.length;
@@ -240,6 +338,11 @@ function App() {
   const selectedMatch = useMemo(
     () => output.matches.find((match) => match.profileId === selectedProfileId) ?? null,
     [selectedProfileId, output.matches],
+  );
+
+  const acceptedMatch = useMemo(
+    () => output.matches.find((match) => match.profileId === acceptedProfileId) ?? null,
+    [acceptedProfileId, output.matches],
   );
 
   function resetSelectionState() {
@@ -279,11 +382,13 @@ function App() {
     resetSelectionState();
   }
 
-  async function acceptPlan() {
-    if (!selectedMatch) {
+  async function acceptPlan(matchToAccept?: SparkMatch) {
+    const targetMatch = matchToAccept ?? selectedMatch;
+    if (!targetMatch) {
       return;
     }
 
+    setSelectedProfileId(targetMatch.profileId);
     setIsAccepting(true);
     setError(null);
 
@@ -299,12 +404,13 @@ function App() {
             displayName: output.viewerProfile.displayName || "Alex",
           },
           selectedProfile: {
-            id: selectedMatch.profileId,
-            displayName: selectedMatch.displayName,
+            id: targetMatch.profileId,
+            displayName: targetMatch.displayName,
           },
-          acceptedPlanTitle: selectedMatch.sparkPlan.title,
+          acceptedPlanTitle: targetMatch.sparkPlan.title,
           totalAcceptedMatches: 1,
         });
+        setAcceptedProfileId(targetMatch.profileId);
         setAcceptedAt(acceptedAt);
         return;
       }
@@ -316,10 +422,11 @@ function App() {
       await window.openai.callTool("spark-accept-match", {
         matchSessionId: output.matchSessionId,
         viewerProfileId: output.viewerProfile.id,
-        selectedProfileId: selectedMatch.profileId,
-        acceptedPlanTitle: selectedMatch.sparkPlan.title,
+        selectedProfileId: targetMatch.profileId,
+        acceptedPlanTitle: targetMatch.sparkPlan.title,
       });
 
+      setAcceptedProfileId(targetMatch.profileId);
       setAcceptedAt(new Date().toISOString());
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unable to complete acceptance.");
@@ -328,7 +435,7 @@ function App() {
     }
   }
 
-  const isAccepted = acceptedAt !== null && selectedMatch !== null;
+  const isAccepted = acceptedAt !== null && acceptedMatch !== null;
 
   return (
     <main className="spark-root relative rounded-[20px] p-4 sm:p-6">
@@ -427,6 +534,9 @@ function App() {
                     isSelected={selectedProfileId === currentMatch.profileId}
                     isWhyOpen={openWhyProfileId === currentMatch.profileId}
                     onAccept={() => {
+                      void acceptPlan(currentMatch);
+                    }}
+                    onPlanFirstDate={() => {
                       setSelectedProfileId(currentMatch.profileId);
                       setError(null);
                     }}
@@ -456,9 +566,7 @@ function App() {
               ))}
             </div>
 
-            <p className="spark-swipe-hint">
-              Swipe left or right to browse matches, or use Previous/Next.
-            </p>
+            <p className="spark-swipe-hint">Swipe left or right to browse matches, or use Previous/Next.</p>
           </section>
         )}
 
@@ -505,12 +613,7 @@ function App() {
             {error && <div className="spark-error">{error}</div>}
 
             <div className="spark-card-actions">
-              <button
-                type="button"
-                className="spark-btn spark-btn-primary"
-                onClick={acceptPlan}
-                disabled={isAccepting}
-              >
+              <button type="button" className="spark-btn spark-btn-primary" onClick={() => void acceptPlan()} disabled={isAccepting}>
                 {isAccepting ? "Accepting..." : "Accept this plan"}
               </button>
               <button
@@ -537,7 +640,7 @@ function App() {
             <button
               type="button"
               className="spark-btn spark-btn-primary"
-              onClick={acceptPlan}
+              onClick={() => void acceptPlan()}
               disabled={isAccepting}
             >
               {isAccepting ? "Accepting..." : "Accept"}
@@ -545,7 +648,7 @@ function App() {
           </div>
         )}
 
-        {isAccepted && selectedMatch && (
+        {isAccepted && acceptedMatch && (
           <motion.section
             className="spark-confirm-panel spark-motion"
             initial={reduceMotion ? false : { opacity: 0, y: 10 }}
@@ -554,12 +657,12 @@ function App() {
           >
             <p className="spark-eyebrow">Spark accepted</p>
             <h2 className="spark-confirm-title">
-              {output.viewerProfile.displayName} + {selectedMatch.displayName}
+              {output.viewerProfile.displayName} + {acceptedMatch.displayName}
             </h2>
             <p className="spark-plan-copy">
               Acceptance recorded. Next step handled by the dating app for full scheduling and logistics.
             </p>
-            <p className="spark-created-at">Accepted at {new Date(acceptedAt).toLocaleString()}</p>
+            {acceptedAt && <p className="spark-created-at">Accepted at {new Date(acceptedAt).toLocaleString()}</p>}
             {demoMode && (
               <p className="spark-created-at">
                 Open acceptance widget: <code>/assets/spark-acceptance.html?demo=1</code>
