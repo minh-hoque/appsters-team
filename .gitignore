@@ -4,6 +4,7 @@ node_modules/
 
 # Build outputs
 /assets
+data/tacos-exchange-state.json
 dist/
 build/
 .vite/

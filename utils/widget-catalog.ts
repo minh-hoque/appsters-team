@@ -13,11 +13,16 @@ type Widget = {
   title: string;
   uiName: string;
   templateUri: string;
+  legacyTemplateUri: string;
   invoking: string;
   invoked: string;
 };
 
 type DescriptorMeta = {
+  ui: {
+    resourceUri: string;
+    visibility: ["model", "app"];
+  };
   "openai/outputTemplate": string;
   "openai/toolInvocation/invoking": string;
   "openai/toolInvocation/invoked": string;
@@ -31,10 +36,12 @@ type InvocationMeta = {
 
 type ResourceContent = {
   uri: string;
-  mimeType: "text/html+skybridge";
+  mimeType: "text/html;profile=mcp-app";
   text: string;
   _meta: DescriptorMeta;
 };
+
+const WIDGET_MIME_TYPE = "text/html;profile=mcp-app" as const;
 
 export type WidgetCatalog = {
   tools: Tool[];
@@ -83,6 +90,10 @@ function readWidgetHtml(assetsDir: string, uiName: string): string {
 
 function descriptorMeta(widget: Widget): DescriptorMeta {
   return {
+    ui: {
+      resourceUri: widget.templateUri,
+      visibility: ["model", "app"],
+    },
     "openai/outputTemplate": widget.templateUri,
     "openai/toolInvocation/invoking": widget.invoking,
     "openai/toolInvocation/invoked": widget.invoked,
@@ -97,15 +108,50 @@ function invocationMeta(widget: Widget): InvocationMeta {
   };
 }
 
+function resolveTemplateFile(assetsDir: string, uiName: string): string {
+  const hashedCandidates = fs
+    .readdirSync(assetsDir)
+    .filter((file) => file.startsWith(`${uiName}-`) && file.endsWith(".html"))
+    .map((file) => ({
+      file,
+      mtimeMs: fs.statSync(path.join(assetsDir, file)).mtimeMs,
+    }))
+    .sort((left, right) => right.mtimeMs - left.mtimeMs);
+
+  const newestHashed = hashedCandidates[0]?.file;
+  if (newestHashed) {
+    return newestHashed;
+  }
+
+  return `${uiName}.html`;
+}
+
+function readWidgetHtmlFromTemplateUri(
+  assetsDir: string,
+  templateUri: string,
+  uiName: string,
+): string {
+  const fileName = templateUri.replace("ui://widget/", "");
+  const filePath = path.join(assetsDir, fileName);
+
+  if (fs.existsSync(filePath)) {
+    return fs.readFileSync(filePath, "utf8");
+  }
+
+  return readWidgetHtml(assetsDir, uiName);
+}
+
 function createWidget(definition: ToolDefinition, assetsDir: string): Widget {
   // Fail fast if assets are missing at startup.
   readWidgetHtml(assetsDir, definition.ui);
+  const templateFile = resolveTemplateFile(assetsDir, definition.ui);
 
   return {
     toolName: definition.name,
     title: definition.title,
     uiName: definition.ui,
-    templateUri: `ui://widget/${definition.ui}.html`,
+    templateUri: `ui://widget/${templateFile}`,
+    legacyTemplateUri: `ui://widget/${definition.ui}.html`,
     invoking: definition.invoking,
     invoked: definition.invoked,
   };
@@ -124,6 +170,7 @@ export function createWidgetCatalog(
   widgets.forEach((widget) => {
     widgetsByToolName.set(widget.toolName, widget);
     widgetsByUri.set(widget.templateUri, widget);
+    widgetsByUri.set(widget.legacyTemplateUri, widget);
   });
 
   toolDefinitions.forEach((tool) => {
@@ -151,7 +198,7 @@ export function createWidgetCatalog(
     uri: widget.templateUri,
     name: widget.title,
     description: `${widget.title} widget markup`,
-    mimeType: "text/html+skybridge",
+    mimeType: WIDGET_MIME_TYPE,
     _meta: descriptorMeta(widget),
   }));
 
@@ -159,7 +206,7 @@ export function createWidgetCatalog(
     uriTemplate: widget.templateUri,
     name: widget.title,
     description: `${widget.title} widget markup`,
-    mimeType: "text/html+skybridge",
+    mimeType: WIDGET_MIME_TYPE,
     _meta: descriptorMeta(widget),
   }));
 
@@ -176,10 +223,14 @@ export function createWidgetCatalog(
 
       return {
         uri: widget.templateUri,
-        mimeType: "text/html+skybridge",
+        mimeType: WIDGET_MIME_TYPE,
         // Read latest asset HTML on each request so UI rebuilds are reflected
         // without requiring an MCP server restart.
-        text: readWidgetHtml(assetsDir, widget.uiName),
+        text: readWidgetHtmlFromTemplateUri(
+          assetsDir,
+          widget.templateUri,
+          widget.uiName,
+        ),
         _meta: descriptorMeta(widget),
       };
     },

@@ -1,25 +1,54 @@
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { z } from "zod/v3";
 import { defineTool } from "../utils/define-tool";
 
-type Desk = "engineering" | "research" | "go-to-market" | "cross-org";
-type Risk = "low" | "balanced" | "degen";
 type BetSide = "YES" | "NO";
+
+type MarketTemplate = {
+  id: string;
+  title: string;
+  subtitle: string;
+  featured: boolean;
+  initialYesPool: number;
+  initialNoPool: number;
+};
+
+type MarketState = {
+  yesPool: number;
+  noPool: number;
+};
+
+type PersistedBet = {
+  id: string;
+  bettorId: string;
+  marketId: string;
+  marketTitle: string;
+  side: BetSide;
+  stakeTacos: number;
+  entryPrice: number;
+  potentialPayout: number;
+  placedAtIso: string;
+  status: "open";
+};
+
+type PersistedState = {
+  version: 1;
+  updatedAtIso: string;
+  markets: Record<string, MarketState>;
+  bets: PersistedBet[];
+  activity: string[];
+};
 
 type Market = {
   id: string;
   title: string;
   subtitle: string;
-  category: string;
-  desk: Desk;
-  deadlineIso: string;
   yesProbability: number;
   yesPrice: number;
   noPrice: number;
-  liquidityTacos: number;
-  volume24hTacos: number;
-  momentum: "up" | "down" | "flat";
   featured: boolean;
-  resolutionSource: string;
 };
 
 type OpenBet = {
@@ -34,55 +63,70 @@ type OpenBet = {
   status: "open";
 };
 
-type LeaderboardEntry = {
-  rank: number;
-  alias: string;
-  roiPct: number;
-  tacosWon: number;
-  streak: number;
-};
-
-type FeedEvent = {
-  id: string;
-  timestampIso: string;
-  severity: "info" | "win" | "risk";
-  text: string;
-};
-
 type ToolOutput = {
   appName: string;
-  desk: Desk;
   generatedAtIso: string;
-  riskMode: Risk;
   wallet: {
     availableTacos: number;
     reservedTacos: number;
     lifetimePnlTacos: number;
-    winRatePct: number;
-    exposurePct: number;
   };
   summary: {
     openMarkets: number;
     activeBets: number;
-    featuredMarkets: number;
-    avgImpliedEdgePct: number;
   };
   markets: Market[];
   openBets: OpenBet[];
-  leaderboard: LeaderboardEntry[];
-  feed: FeedEvent[];
+  activity: string[];
   starterPrompts: string[];
 };
 
+const MARKET_TEMPLATES: MarketTemplate[] = [
+  {
+    id: "gpt-5-4-march",
+    title: "GPT-5.4 release in March",
+    subtitle: "March 2026 release window",
+    featured: true,
+    initialYesPool: 110,
+    initialNoPool: 890,
+  },
+  {
+    id: "ade-name-stay",
+    title: "Will Ade name stay?",
+    subtitle: "Naming decision check by late March",
+    featured: true,
+    initialYesPool: 910,
+    initialNoPool: 90,
+  },
+  {
+    id: "toki-ceo",
+    title: "Will Toki be CEO?",
+    subtitle: "Leadership call expected in March",
+    featured: true,
+    initialYesPool: 880,
+    initialNoPool: 120,
+  },
+  {
+    id: "apps-revenue-2025",
+    title: "Would we make Apps revenue in 2025?",
+    subtitle: "Retrospective finance closeout",
+    featured: false,
+    initialYesPool: 70,
+    initialNoPool: 930,
+  },
+];
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const DATA_DIR = path.resolve(__dirname, "../data");
+const STATE_FILE = path.join(DATA_DIR, "tacos-exchange-state.json");
+
 const tacosBookInput = z.object({
-  desk: z
-    .enum(["engineering", "research", "go-to-market", "cross-org"])
-    .default("engineering")
-    .describe("Market desk to focus on."),
-  riskMode: z
-    .enum(["low", "balanced", "degen"])
-    .default("balanced")
-    .describe("Controls suggested stake sizing."),
+  bettorId: z
+    .string()
+    .min(1)
+    .max(64)
+    .default("guest")
+    .describe("Stable local user id so wallet and bet history stay consistent."),
   seedTacos: z
     .number()
     .int()
@@ -90,10 +134,6 @@ const tacosBookInput = z.object({
     .max(5000)
     .default(1200)
     .describe("Starting TACOS balance to model."),
-  featuredOnly: z
-    .boolean()
-    .default(false)
-    .describe("When true, only return featured markets."),
   placeBet: z
     .object({
       marketId: z.string().min(1),
@@ -101,280 +141,205 @@ const tacosBookInput = z.object({
       stakeTacos: z.number().int().min(10).max(500),
     })
     .optional()
-    .describe("Optional simulated order to include in the returned snapshot."),
+    .describe("Optional order to place on the market."),
 });
-
-const BASE_MARKETS: Market[] = [
-  {
-    id: "eng-evals-coverage",
-    title: "Core eval harness reaches 95% scenario coverage",
-    subtitle: "Resolution by Feb 28, 2026",
-    category: "Reliability",
-    desk: "engineering",
-    deadlineIso: "2026-02-28T23:00:00.000Z",
-    yesProbability: 0.68,
-    yesPrice: 0.68,
-    noPrice: 0.32,
-    liquidityTacos: 18200,
-    volume24hTacos: 6400,
-    momentum: "up",
-    featured: true,
-    resolutionSource: "Weekly infra readout",
-  },
-  {
-    id: "eng-latency-cut",
-    title: "Median tool latency drops below 250ms this sprint",
-    subtitle: "Resolution by Feb 20, 2026",
-    category: "Performance",
-    desk: "engineering",
-    deadlineIso: "2026-02-20T21:00:00.000Z",
-    yesProbability: 0.44,
-    yesPrice: 0.44,
-    noPrice: 0.56,
-    liquidityTacos: 12100,
-    volume24hTacos: 7900,
-    momentum: "flat",
-    featured: false,
-    resolutionSource: "Latency dashboard",
-  },
-  {
-    id: "res-multimodal-win",
-    title: "New multimodal eval clears internal launch bar",
-    subtitle: "Resolution by Mar 12, 2026",
-    category: "Research",
-    desk: "research",
-    deadlineIso: "2026-03-12T22:00:00.000Z",
-    yesProbability: 0.57,
-    yesPrice: 0.57,
-    noPrice: 0.43,
-    liquidityTacos: 21600,
-    volume24hTacos: 5300,
-    momentum: "up",
-    featured: true,
-    resolutionSource: "Research launch review",
-  },
-  {
-    id: "res-safety-regression",
-    title: "Zero critical safety regressions in next milestone",
-    subtitle: "Resolution by Mar 5, 2026",
-    category: "Safety",
-    desk: "research",
-    deadlineIso: "2026-03-05T19:00:00.000Z",
-    yesProbability: 0.74,
-    yesPrice: 0.74,
-    noPrice: 0.26,
-    liquidityTacos: 9900,
-    volume24hTacos: 3000,
-    momentum: "flat",
-    featured: false,
-    resolutionSource: "Safety review board",
-  },
-  {
-    id: "gtm-enterprise-pilot",
-    title: "Two enterprise pilots convert to paid by month end",
-    subtitle: "Resolution by Mar 1, 2026",
-    category: "GTM",
-    desk: "go-to-market",
-    deadlineIso: "2026-03-01T18:00:00.000Z",
-    yesProbability: 0.51,
-    yesPrice: 0.51,
-    noPrice: 0.49,
-    liquidityTacos: 14100,
-    volume24hTacos: 4700,
-    momentum: "up",
-    featured: true,
-    resolutionSource: "Revenue ops tracker",
-  },
-  {
-    id: "cross-org-release-health",
-    title: "Quarterly release ships with no sev1 incidents",
-    subtitle: "Resolution by Mar 18, 2026",
-    category: "Execution",
-    desk: "cross-org",
-    deadlineIso: "2026-03-18T23:00:00.000Z",
-    yesProbability: 0.63,
-    yesPrice: 0.63,
-    noPrice: 0.37,
-    liquidityTacos: 17400,
-    volume24hTacos: 5100,
-    momentum: "down",
-    featured: true,
-    resolutionSource: "Incident command summary",
-  },
-];
 
 function round2(value: number): number {
   return Math.round(value * 100) / 100;
 }
 
-function clamp(value: number, min: number, max: number): number {
-  return Math.min(max, Math.max(min, value));
+function ensureDataDir(): void {
+  fs.mkdirSync(DATA_DIR, { recursive: true });
 }
 
-function seededShift(seed: number, index: number): number {
-  const raw = Math.sin(seed * 0.013 + index * 1.73) * 0.075;
-  return clamp(raw, -0.08, 0.08);
-}
-
-function adjustMarkets(markets: Market[], seed: number): Market[] {
-  return markets.map((market, index) => {
-    const shiftedProbability = clamp(
-      market.yesProbability + seededShift(seed, index),
-      0.18,
-      0.84,
-    );
-
-    const yesPrice = round2(shiftedProbability);
-    return {
-      ...market,
-      yesProbability: yesPrice,
-      yesPrice,
-      noPrice: round2(1 - yesPrice),
-      liquidityTacos: Math.max(5000, market.liquidityTacos + Math.round(seededShift(seed * 2, index) * 10000)),
-      volume24hTacos: Math.max(1200, market.volume24hTacos + Math.round(seededShift(seed * 3, index) * 3500)),
-      momentum:
-        shiftedProbability - market.yesProbability > 0.015
-          ? "up"
-          : shiftedProbability - market.yesProbability < -0.015
-            ? "down"
-            : "flat",
-    };
-  });
-}
-
-function riskFraction(riskMode: Risk): number {
-  if (riskMode === "low") {
-    return 0.06;
-  }
-  if (riskMode === "degen") {
-    return 0.22;
-  }
-  return 0.12;
-}
-
-function potentialPayout(stakeTacos: number, price: number): number {
-  const payout = stakeTacos / Math.max(price, 0.05);
-  return round2(payout);
-}
-
-function starterBets(markets: Market[], seedTacos: number, riskMode: Risk): OpenBet[] {
-  const candidates = markets.slice(0, 2);
-  const size = Math.max(18, Math.round(seedTacos * riskFraction(riskMode) * 0.45));
-
-  return candidates.map((market, index) => {
-    const side: BetSide = index % 2 === 0 ? "YES" : "NO";
-    const entryPrice = side === "YES" ? market.yesPrice : market.noPrice;
-
-    return {
-      id: `seed-${market.id}-${index}`,
-      marketId: market.id,
-      marketTitle: market.title,
-      side,
-      stakeTacos: size,
-      entryPrice,
-      potentialPayout: potentialPayout(size, entryPrice),
-      placedAtIso: new Date(Date.now() - (index + 1) * 1000 * 60 * 45).toISOString(),
-      status: "open",
-    };
-  });
-}
-
-function maybePlacedBet(
-  markets: Market[],
-  order: z.infer<typeof tacosBookInput>["placeBet"],
-): OpenBet[] {
-  if (!order) {
-    return [];
-  }
-
-  const market = markets.find((item) => item.id === order.marketId);
-  if (!market) {
-    return [];
-  }
-
-  const entryPrice = order.side === "YES" ? market.yesPrice : market.noPrice;
-
-  return [
-    {
-      id: `order-${market.id}-${order.side.toLowerCase()}-${order.stakeTacos}`,
-      marketId: market.id,
-      marketTitle: market.title,
-      side: order.side,
-      stakeTacos: order.stakeTacos,
-      entryPrice,
-      potentialPayout: potentialPayout(order.stakeTacos, entryPrice),
-      placedAtIso: new Date().toISOString(),
-      status: "open",
-    },
-  ];
-}
-
-function leaderboard(seedTacos: number): LeaderboardEntry[] {
-  const base = Math.max(3000, seedTacos * 3);
-  return [
-    { rank: 1, alias: "AlphaSynth", roiPct: 31.4, tacosWon: Math.round(base * 1.8), streak: 6 },
-    { rank: 2, alias: "Toolsmith", roiPct: 27.8, tacosWon: Math.round(base * 1.52), streak: 4 },
-    { rank: 3, alias: "LatencyHawk", roiPct: 24.9, tacosWon: Math.round(base * 1.37), streak: 5 },
-    { rank: 4, alias: "EvalNerd", roiPct: 20.2, tacosWon: Math.round(base * 1.2), streak: 3 },
-    { rank: 5, alias: "PromptPilot", roiPct: 18.6, tacosWon: Math.round(base * 1.08), streak: 2 },
-  ];
-}
-
-function feed(markets: Market[], hasOrder: boolean): FeedEvent[] {
-  const now = Date.now();
-  const events: FeedEvent[] = [
-    {
-      id: "f-1",
-      timestampIso: new Date(now - 1000 * 60 * 12).toISOString(),
-      severity: "info",
-      text: `${markets[0]?.category ?? "Market"} desk volume accelerated in the last 10m.`,
-    },
-    {
-      id: "f-2",
-      timestampIso: new Date(now - 1000 * 60 * 31).toISOString(),
-      severity: "win",
-      text: "Three markets resolved in the money for YES holders.",
-    },
-    {
-      id: "f-3",
-      timestampIso: new Date(now - 1000 * 60 * 54).toISOString(),
-      severity: "risk",
-      text: "Large NO position opened against release-health market.",
-    },
-  ];
-
-  if (hasOrder) {
-    events.unshift({
-      id: "f-order",
-      timestampIso: new Date(now - 1000 * 60).toISOString(),
-      severity: "info",
-      text: "Your simulated order was queued on the TACOS book.",
-    });
-  }
-
-  return events;
-}
-
-function summarize(markets: Market[], openBets: OpenBet[]): ToolOutput["summary"] {
-  const averageEdge =
-    markets.length === 0
-      ? 0
-      : markets.reduce((acc, market) => acc + Math.abs(market.yesProbability - 0.5), 0) /
-        markets.length;
+function defaultState(): PersistedState {
+  const markets = Object.fromEntries(
+    MARKET_TEMPLATES.map((item) => [
+      item.id,
+      {
+        yesPool: item.initialYesPool,
+        noPool: item.initialNoPool,
+      },
+    ]),
+  );
 
   return {
-    openMarkets: markets.length,
-    activeBets: openBets.length,
-    featuredMarkets: markets.filter((item) => item.featured).length,
-    avgImpliedEdgePct: round2(averageEdge * 100),
+    version: 1,
+    updatedAtIso: new Date().toISOString(),
+    markets,
+    bets: [],
+    activity: [
+      "Market is live. Place a bet to move the odds.",
+      "Tip: favorites are expensive but safer.",
+      "Long shots are cheap but risky.",
+    ],
+  };
+}
+
+function ensureShape(state: PersistedState): PersistedState {
+  const mergedMarkets: Record<string, MarketState> = {};
+  for (const template of MARKET_TEMPLATES) {
+    const existing = state.markets[template.id];
+    mergedMarkets[template.id] = {
+      yesPool:
+        existing && Number.isFinite(existing.yesPool)
+          ? existing.yesPool
+          : template.initialYesPool,
+      noPool:
+        existing && Number.isFinite(existing.noPool)
+          ? existing.noPool
+          : template.initialNoPool,
+    };
+  }
+
+  return {
+    version: 1,
+    updatedAtIso: state.updatedAtIso || new Date().toISOString(),
+    markets: mergedMarkets,
+    bets: Array.isArray(state.bets) ? state.bets.slice(0, 2000) : [],
+    activity:
+      Array.isArray(state.activity) && state.activity.length > 0
+        ? state.activity.slice(0, 20)
+        : defaultState().activity,
+  };
+}
+
+function loadState(): PersistedState {
+  ensureDataDir();
+
+  if (!fs.existsSync(STATE_FILE)) {
+    const fresh = defaultState();
+    fs.writeFileSync(STATE_FILE, JSON.stringify(fresh, null, 2), "utf8");
+    return fresh;
+  }
+
+  try {
+    const raw = fs.readFileSync(STATE_FILE, "utf8");
+    const parsed = JSON.parse(raw) as PersistedState;
+    return ensureShape(parsed);
+  } catch {
+    const fresh = defaultState();
+    fs.writeFileSync(STATE_FILE, JSON.stringify(fresh, null, 2), "utf8");
+    return fresh;
+  }
+}
+
+function saveState(state: PersistedState): void {
+  ensureDataDir();
+  fs.writeFileSync(STATE_FILE, JSON.stringify(state, null, 2), "utf8");
+}
+
+function poolsToMarket(template: MarketTemplate, pool: MarketState): Market {
+  const total = Math.max(1, pool.yesPool + pool.noPool);
+  const yesProbability = round2(pool.yesPool / total);
+  const yesPrice = yesProbability;
+  const noPrice = round2(1 - yesProbability);
+
+  return {
+    id: template.id,
+    title: template.title,
+    subtitle: template.subtitle,
+    yesProbability,
+    yesPrice,
+    noPrice,
+    featured: template.featured,
+  };
+}
+
+function potentialPayout(stakeTacos: number, sidePrice: number): number {
+  return round2(stakeTacos / Math.max(sidePrice, 0.05));
+}
+
+function applyBet(
+  state: PersistedState,
+  order: z.infer<typeof tacosBookInput>["placeBet"],
+  bettorId: string,
+): PersistedState {
+  if (!order) {
+    return state;
+  }
+
+  const template = MARKET_TEMPLATES.find((market) => market.id === order.marketId);
+  const marketState = template ? state.markets[template.id] : undefined;
+
+  if (!template || !marketState) {
+    return state;
+  }
+
+  const totalPool = Math.max(1, marketState.yesPool + marketState.noPool);
+  const currentYesPrice = round2(marketState.yesPool / totalPool);
+  const currentNoPrice = round2(1 - currentYesPrice);
+  const entryPrice = order.side === "YES" ? currentYesPrice : currentNoPrice;
+
+  if (order.side === "YES") {
+    marketState.yesPool += order.stakeTacos;
+  } else {
+    marketState.noPool += order.stakeTacos;
+  }
+
+  const newBet: PersistedBet = {
+    id: `bet-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    bettorId,
+    marketId: template.id,
+    marketTitle: template.title,
+    side: order.side,
+    stakeTacos: order.stakeTacos,
+    entryPrice,
+    potentialPayout: potentialPayout(order.stakeTacos, entryPrice),
+    placedAtIso: new Date().toISOString(),
+    status: "open",
+  };
+
+  const nextActivity = [
+    `${bettorId} placed ${order.stakeTacos} 🌮 on ${order.side} for "${template.title}".`,
+    ...state.activity,
+  ].slice(0, 20);
+
+  return {
+    ...state,
+    updatedAtIso: new Date().toISOString(),
+    markets: {
+      ...state.markets,
+      [template.id]: marketState,
+    },
+    bets: [newBet, ...state.bets].slice(0, 2000),
+    activity: nextActivity,
+  };
+}
+
+function toOpenBet(input: PersistedBet): OpenBet {
+  return {
+    id: input.id,
+    marketId: input.marketId,
+    marketTitle: input.marketTitle,
+    side: input.side,
+    stakeTacos: input.stakeTacos,
+    entryPrice: input.entryPrice,
+    potentialPayout: input.potentialPayout,
+    placedAtIso: input.placedAtIso,
+    status: "open",
+  };
+}
+
+function buildWallet(
+  seedTacos: number,
+  bets: Array<{ stakeTacos: number }>,
+): ToolOutput["wallet"] {
+  const reservedTacos = bets.reduce((sum, bet) => sum + bet.stakeTacos, 0);
+  const availableTacos = Math.max(0, seedTacos - reservedTacos);
+  const lifetimePnlTacos = Math.round(bets.length * 4 - reservedTacos * 0.03);
+
+  return {
+    availableTacos,
+    reservedTacos,
+    lifetimePnlTacos,
   };
 }
 
 export default defineTool({
   name: "tacos-book",
   title: "Open TACOS Betting Floor",
-  description:
-    "Run a simulated prediction market where teams bet TACOS on internal milestones and outcomes.",
+  description: "Simple TACOS prediction market with live odds and quick bets.",
   annotations: {
     readOnlyHint: true,
     openWorldHint: false,
@@ -382,55 +347,50 @@ export default defineTool({
   },
   input: tacosBookInput,
   ui: "tacos-book",
-  invoking: "Spinning up the TACOS floor",
-  invoked: "TACOS floor is live",
-  async handler(input): Promise<{ content: Array<{ type: "text"; text: string }>; structuredContent: ToolOutput }> {
-    const deskFiltered = BASE_MARKETS.filter((market) => market.desk === input.desk);
-    const scoped = deskFiltered.length > 0 ? deskFiltered : BASE_MARKETS;
-    const adjusted = adjustMarkets(scoped, input.seedTacos);
-    const markets = input.featuredOnly ? adjusted.filter((market) => market.featured) : adjusted;
+  invoking: "Opening TACOS Exchange",
+  invoked: "TACOS Exchange is live",
+  async handler(input): Promise<{
+    content: Array<{ type: "text"; text: string }>;
+    structuredContent: ToolOutput;
+  }> {
+    const current = loadState();
+    const updated = applyBet(current, input.placeBet, input.bettorId);
+    saveState(updated);
 
-    const seededOpenBets = starterBets(markets, input.seedTacos, input.riskMode);
-    const placedBets = maybePlacedBet(markets, input.placeBet);
-    const openBets = [...placedBets, ...seededOpenBets];
+    const markets = MARKET_TEMPLATES.map((template) =>
+      poolsToMarket(template, updated.markets[template.id]),
+    );
 
-    const reservedTacos = openBets.reduce((sum, bet) => sum + bet.stakeTacos, 0);
-    const availableTacos = Math.max(0, input.seedTacos - reservedTacos);
+    const userBets = updated.bets
+      .filter((bet) => bet.bettorId === input.bettorId)
+      .slice(0, 8)
+      .map(toOpenBet);
 
-    const exposurePct = input.seedTacos === 0 ? 0 : round2((reservedTacos / input.seedTacos) * 100);
+    const wallet = buildWallet(input.seedTacos, userBets);
 
     const structuredContent: ToolOutput = {
       appName: "TACOS Exchange",
-      desk: input.desk,
       generatedAtIso: new Date().toISOString(),
-      riskMode: input.riskMode,
-      wallet: {
-        availableTacos,
-        reservedTacos,
-        lifetimePnlTacos: Math.round(input.seedTacos * 0.13),
-        winRatePct: round2(56 + seededShift(input.seedTacos, 7) * 100),
-        exposurePct,
+      wallet,
+      summary: {
+        openMarkets: markets.length,
+        activeBets: updated.bets.length,
       },
-      summary: summarize(markets, openBets),
       markets,
-      openBets,
-      leaderboard: leaderboard(input.seedTacos),
-      feed: feed(markets, placedBets.length > 0),
+      openBets: userBets,
+      activity: updated.activity.slice(0, 3),
       starterPrompts: [
-        "Open the TACOS floor for engineering with low risk mode.",
-        "Show only featured markets in research with 1800 TACOS.",
-        "Place a simulated YES order of 120 TACOS on the top market.",
+        "Open TACOS Exchange.",
+        "Bet 100 TACOS YES on 'Will Toki be CEO?'.",
+        "Bet 120 TACOS NO on 'GPT-5.4 release in March'.",
       ],
     };
-
-    const marketCount = structuredContent.markets.length;
-    const betCount = structuredContent.openBets.length;
 
     return {
       content: [
         {
           type: "text",
-          text: `TACOS floor loaded for ${input.desk}. ${marketCount} markets live and ${betCount} active bets in your book.`,
+          text: `🌮 TACOS Exchange loaded. ${structuredContent.summary.openMarkets} markets live, ${structuredContent.summary.activeBets} total bets placed.`,
         },
       ],
       structuredContent,

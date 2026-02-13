@@ -1,31 +1,21 @@
 import { motion } from "framer-motion";
-import type { LucideIcon } from "lucide-react";
-import { Activity, ArrowDown, ArrowUp, CandlestickChart, Flame, Layers3, Minus, Trophy } from "lucide-react";
-import { useEffect, useMemo } from "react";
+import { ArrowDownRight, ArrowUpRight, RefreshCw, Sparkles } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { useWidgetProps } from "../hooks/use-widget-props";
 import { useWidgetState } from "../hooks/use-widget-state";
 import "./tacos-book.css";
 
-type Desk = "engineering" | "research" | "go-to-market" | "cross-org";
-type RiskMode = "low" | "balanced" | "degen";
 type Side = "YES" | "NO";
 
 type Market = {
   id: string;
   title: string;
   subtitle: string;
-  category: string;
-  desk: Desk;
-  deadlineIso: string;
   yesProbability: number;
   yesPrice: number;
   noPrice: number;
-  liquidityTacos: number;
-  volume24hTacos: number;
-  momentum: "up" | "down" | "flat";
   featured: boolean;
-  resolutionSource: string;
 };
 
 type OpenBet = {
@@ -40,575 +30,402 @@ type OpenBet = {
   status: "open";
 };
 
-type LeaderboardEntry = {
-  rank: number;
-  alias: string;
-  roiPct: number;
-  tacosWon: number;
-  streak: number;
-};
-
-type FeedEvent = {
-  id: string;
-  timestampIso: string;
-  severity: "info" | "win" | "risk";
-  text: string;
-};
-
 type ToolPayload = {
   appName: string;
-  desk: Desk;
   generatedAtIso: string;
-  riskMode: RiskMode;
   wallet: {
     availableTacos: number;
     reservedTacos: number;
     lifetimePnlTacos: number;
-    winRatePct: number;
-    exposurePct: number;
   };
   summary: {
     openMarkets: number;
     activeBets: number;
-    featuredMarkets: number;
-    avgImpliedEdgePct: number;
   };
   markets: Market[];
   openBets: OpenBet[];
-  leaderboard: LeaderboardEntry[];
-  feed: FeedEvent[];
+  activity: string[];
   starterPrompts: string[];
 };
 
-type LocalTicket = {
-  id: string;
-  marketId: string;
-  marketTitle: string;
-  side: Side;
-  stakeTacos: number;
-  entryPrice: number;
-  potentialPayout: number;
-  placedAtIso: string;
+type WidgetState = {
+  stake: number;
+  bettorId: string | null;
+  snapshot: ToolPayload | null;
 };
 
-type WidgetState = {
-  selectedMarketId: string | null;
-  selectedSide: Side;
-  stakeTacos: number;
-  localTickets: LocalTicket[];
-};
+const STAKE_OPTIONS = [25, 50, 100, 200] as const;
 
 const FALLBACK_DATA: ToolPayload = {
   appName: "TACOS Exchange",
-  desk: "engineering",
   generatedAtIso: new Date().toISOString(),
-  riskMode: "balanced",
   wallet: {
-    availableTacos: 980,
-    reservedTacos: 220,
-    lifetimePnlTacos: 144,
-    winRatePct: 58.2,
-    exposurePct: 18.3,
+    availableTacos: 880,
+    reservedTacos: 320,
+    lifetimePnlTacos: 156,
   },
   summary: {
-    openMarkets: 3,
+    openMarkets: 4,
     activeBets: 2,
-    featuredMarkets: 2,
-    avgImpliedEdgePct: 11.9,
   },
   markets: [
     {
-      id: "eng-evals-coverage",
-      title: "Core eval harness reaches 95% scenario coverage",
-      subtitle: "Resolution by Feb 28, 2026",
-      category: "Reliability",
-      desk: "engineering",
-      deadlineIso: "2026-02-28T23:00:00.000Z",
-      yesProbability: 0.68,
-      yesPrice: 0.68,
-      noPrice: 0.32,
-      liquidityTacos: 18200,
-      volume24hTacos: 6400,
-      momentum: "up",
+      id: "gpt-5-4-march",
+      title: "GPT-5.4 release in March",
+      subtitle: "March 2026 release window",
+      yesProbability: 0.11,
+      yesPrice: 0.11,
+      noPrice: 0.89,
       featured: true,
-      resolutionSource: "Weekly infra readout",
     },
     {
-      id: "eng-latency-cut",
-      title: "Median tool latency drops below 250ms this sprint",
-      subtitle: "Resolution by Feb 20, 2026",
-      category: "Performance",
-      desk: "engineering",
-      deadlineIso: "2026-02-20T21:00:00.000Z",
-      yesProbability: 0.44,
-      yesPrice: 0.44,
-      noPrice: 0.56,
-      liquidityTacos: 12100,
-      volume24hTacos: 7900,
-      momentum: "flat",
+      id: "ade-name-stay",
+      title: "Will Ade name stay?",
+      subtitle: "Naming decision check by late March",
+      yesProbability: 0.91,
+      yesPrice: 0.91,
+      noPrice: 0.09,
+      featured: true,
+    },
+    {
+      id: "toki-ceo",
+      title: "Will Toki be CEO?",
+      subtitle: "Leadership call expected in March",
+      yesProbability: 0.88,
+      yesPrice: 0.88,
+      noPrice: 0.12,
+      featured: true,
+    },
+    {
+      id: "apps-revenue-2025",
+      title: "Would we make Apps revenue in 2025?",
+      subtitle: "Retrospective finance closeout",
+      yesProbability: 0.07,
+      yesPrice: 0.07,
+      noPrice: 0.93,
       featured: false,
-      resolutionSource: "Latency dashboard",
-    },
-    {
-      id: "eng-ci-stability",
-      title: "CI green rate remains above 98% this week",
-      subtitle: "Resolution by Feb 19, 2026",
-      category: "Execution",
-      desk: "engineering",
-      deadlineIso: "2026-02-19T18:00:00.000Z",
-      yesProbability: 0.72,
-      yesPrice: 0.72,
-      noPrice: 0.28,
-      liquidityTacos: 9400,
-      volume24hTacos: 3400,
-      momentum: "up",
-      featured: true,
-      resolutionSource: "Build health dashboard",
     },
   ],
-  openBets: [
-    {
-      id: "seed-a",
-      marketId: "eng-evals-coverage",
-      marketTitle: "Core eval harness reaches 95% scenario coverage",
-      side: "YES",
-      stakeTacos: 72,
-      entryPrice: 0.68,
-      potentialPayout: 105.88,
-      placedAtIso: new Date(Date.now() - 1000 * 60 * 32).toISOString(),
-      status: "open",
-    },
-    {
-      id: "seed-b",
-      marketId: "eng-latency-cut",
-      marketTitle: "Median tool latency drops below 250ms this sprint",
-      side: "NO",
-      stakeTacos: 64,
-      entryPrice: 0.56,
-      potentialPayout: 114.29,
-      placedAtIso: new Date(Date.now() - 1000 * 60 * 77).toISOString(),
-      status: "open",
-    },
+  openBets: [],
+  activity: [
+    "Market is live. Place a bet to move the odds.",
+    "Tip: favorites are expensive but safer.",
+    "Long shots are cheap but risky.",
   ],
-  leaderboard: [
-    { rank: 1, alias: "AlphaSynth", roiPct: 31.4, tacosWon: 6200, streak: 6 },
-    { rank: 2, alias: "Toolsmith", roiPct: 27.8, tacosWon: 5740, streak: 4 },
-    { rank: 3, alias: "LatencyHawk", roiPct: 24.9, tacosWon: 4980, streak: 5 },
-  ],
-  feed: [
-    {
-      id: "f-1",
-      timestampIso: new Date(Date.now() - 1000 * 60 * 12).toISOString(),
-      severity: "info",
-      text: "Reliability desk volume accelerated in the last 10m.",
-    },
-    {
-      id: "f-2",
-      timestampIso: new Date(Date.now() - 1000 * 60 * 31).toISOString(),
-      severity: "win",
-      text: "Two engineering markets resolved in the money.",
-    },
-  ],
-  starterPrompts: [
-    "Open the TACOS floor for engineering with low risk mode.",
-    "Show only featured markets in research with 1800 TACOS.",
-  ],
+  starterPrompts: ["Open TACOS Exchange."],
 };
 
 const DEFAULT_STATE: WidgetState = {
-  selectedMarketId: null,
-  selectedSide: "YES",
-  stakeTacos: 80,
-  localTickets: [],
+  stake: 50,
+  bettorId: null,
+  snapshot: null,
 };
 
 function formatTacos(value: number): string {
   return value.toLocaleString("en-US", { maximumFractionDigits: 0 });
 }
 
-function formatTime(iso: string): string {
+function timeLabel(iso: string): string {
   return new Date(iso).toLocaleTimeString("en-US", {
     hour: "numeric",
     minute: "2-digit",
   });
 }
 
-function timeUntil(deadlineIso: string): string {
-  const ms = new Date(deadlineIso).getTime() - Date.now();
-  if (ms <= 0) {
-    return "Closing soon";
+function marketTone(probability: number): string {
+  if (probability >= 0.8) {
+    return "Strong favorite";
   }
-
-  const totalHours = Math.floor(ms / (1000 * 60 * 60));
-  const days = Math.floor(totalHours / 24);
-  const hours = totalHours % 24;
-
-  if (days > 0) {
-    return `${days}d ${hours}h left`;
+  if (probability <= 0.2) {
+    return "Long shot";
   }
-  return `${hours}h left`;
+  return "Balanced";
 }
 
-function badgeForMomentum(momentum: Market["momentum"]): { label: string; className: string; Icon: LucideIcon } {
-  if (momentum === "up") {
-    return { label: "Momentum up", className: "is-up", Icon: ArrowUp };
+function createBettorId(): string {
+  return `bettor-${Math.random().toString(36).slice(2, 8)}`;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
+function isToolPayload(value: unknown): value is ToolPayload {
+  if (!isRecord(value)) {
+    return false;
   }
-  if (momentum === "down") {
-    return { label: "Momentum down", className: "is-down", Icon: ArrowDown };
+
+  return (
+    typeof value.appName === "string" &&
+    isRecord(value.wallet) &&
+    Array.isArray(value.markets) &&
+    Array.isArray(value.openBets) &&
+    Array.isArray(value.activity)
+  );
+}
+
+function extractPayload(value: unknown): ToolPayload | null {
+  if (isToolPayload(value)) {
+    return value;
   }
-  return { label: "Stable", className: "is-flat", Icon: Minus };
+
+  if (!isRecord(value)) {
+    return null;
+  }
+
+  if (isToolPayload(value.structuredContent)) {
+    return value.structuredContent;
+  }
+
+  if (isToolPayload(value.result)) {
+    return value.result;
+  }
+
+  if (typeof value.result === "string") {
+    try {
+      const parsed = JSON.parse(value.result) as unknown;
+      if (isToolPayload(parsed)) {
+        return parsed;
+      }
+      if (isRecord(parsed) && isToolPayload(parsed.structuredContent)) {
+        return parsed.structuredContent;
+      }
+    } catch {
+      return null;
+    }
+  }
+
+  return null;
 }
 
 function App() {
-  const data = useWidgetProps<ToolPayload>(FALLBACK_DATA);
+  const baseData = useWidgetProps<ToolPayload>(FALLBACK_DATA);
   const [widgetState, setWidgetState] = useWidgetState<WidgetState>(DEFAULT_STATE);
+  const [loading, setLoading] = useState(false);
 
-  const selectedMarketId = widgetState?.selectedMarketId ?? null;
-  const selectedSide = widgetState?.selectedSide ?? "YES";
-  const stakeTacos = widgetState?.stakeTacos ?? 80;
-  const localTickets = widgetState?.localTickets ?? [];
-
-  const selectedMarket = useMemo(() => {
-    if (!data.markets.length) {
-      return null;
-    }
-    const market = data.markets.find((item) => item.id === selectedMarketId);
-    return market ?? data.markets[0];
-  }, [data.markets, selectedMarketId]);
+  const stake = widgetState?.stake ?? 50;
+  const bettorId = widgetState?.bettorId ?? null;
+  const snapshot = widgetState?.snapshot ?? null;
+  const data = snapshot ?? baseData;
 
   useEffect(() => {
-    if (!data.markets.length) {
+    if (bettorId) {
       return;
     }
 
-    if (selectedMarketId && data.markets.some((item) => item.id === selectedMarketId)) {
-      return;
-    }
-
-    const nextId = data.markets[0]?.id ?? null;
-    if (!nextId) {
-      return;
-    }
-
+    const nextBettorId = createBettorId();
     setWidgetState((prev) => ({
-      selectedMarketId: nextId,
-      selectedSide: prev?.selectedSide ?? "YES",
-      stakeTacos: prev?.stakeTacos ?? 80,
-      localTickets: prev?.localTickets ?? [],
+      stake: prev?.stake ?? 50,
+      bettorId: nextBettorId,
+      snapshot: prev?.snapshot ?? null,
     }));
-  }, [data.markets, selectedMarketId, setWidgetState]);
+  }, [bettorId, setWidgetState]);
 
-  const allTickets = useMemo(() => {
-    return [...localTickets, ...data.openBets];
-  }, [localTickets, data.openBets]);
+  const seedTacos = useMemo(() => {
+    return data.wallet.availableTacos + data.wallet.reservedTacos;
+  }, [data.wallet.availableTacos, data.wallet.reservedTacos]);
 
-  const projectedReserved = useMemo(() => {
-    const localReserved = localTickets.reduce((sum, ticket) => sum + ticket.stakeTacos, 0);
-    return data.wallet.reservedTacos + localReserved;
-  }, [data.wallet.reservedTacos, localTickets]);
-
-  const projectedAvailable = useMemo(() => {
-    return Math.max(0, data.wallet.availableTacos - localTickets.reduce((sum, ticket) => sum + ticket.stakeTacos, 0));
-  }, [data.wallet.availableTacos, localTickets]);
-
-  const selectedPrice = selectedMarket
-    ? selectedSide === "YES"
-      ? selectedMarket.yesPrice
-      : selectedMarket.noPrice
-    : 0;
-  const potentialPayout = selectedPrice > 0 ? stakeTacos / selectedPrice : 0;
-
-  const canPlace = Boolean(selectedMarket) && projectedAvailable >= stakeTacos;
-
-  const placeBetLocally = () => {
-    if (!selectedMarket || !canPlace) {
+  async function syncWithServer(order?: { marketId: string; side: Side; stakeTacos: number }) {
+    if (!bettorId) {
       return;
     }
 
-    const ticket: LocalTicket = {
-      id: `local-${Date.now()}`,
-      marketId: selectedMarket.id,
-      marketTitle: selectedMarket.title,
-      side: selectedSide,
-      stakeTacos,
-      entryPrice: selectedPrice,
-      potentialPayout: Number(potentialPayout.toFixed(2)),
-      placedAtIso: new Date().toISOString(),
-    };
-
-    setWidgetState((prev) => {
-      const prevState = prev ?? DEFAULT_STATE;
-      return {
-        ...prevState,
-        selectedMarketId: selectedMarket.id,
-        selectedSide,
-        stakeTacos: Math.max(20, Math.round(stakeTacos * 0.8)),
-        localTickets: [ticket, ...prevState.localTickets],
-      };
-    });
-
-    const callTool = window.openai?.callTool;
-    if (callTool) {
-      void callTool("tacos-book", {
-        desk: data.desk,
-        riskMode: data.riskMode,
-        seedTacos: projectedAvailable + projectedReserved,
-        placeBet: {
-          marketId: selectedMarket.id,
-          side: selectedSide,
-          stakeTacos,
-        },
-      }).catch(() => {
-        // Ignore host errors in local development and keep local simulation responsive.
-      });
+    const rawCall = window.openai?.callTool as unknown;
+    if (typeof rawCall !== "function") {
+      return;
     }
+
+    const callTool = rawCall as (name: string, args: Record<string, unknown>) => Promise<unknown>;
+
+    setLoading(true);
+    try {
+      const response = await callTool("tacos-book", {
+        bettorId,
+        seedTacos,
+        placeBet: order,
+      });
+
+      const nextSnapshot = extractPayload(response);
+      if (nextSnapshot) {
+        setWidgetState((prev) => ({
+          stake: prev?.stake ?? 50,
+          bettorId: prev?.bettorId ?? bettorId,
+          snapshot: nextSnapshot,
+        }));
+      }
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    if (!bettorId || snapshot) {
+      return;
+    }
+
+    void syncWithServer();
+  }, [bettorId, snapshot]);
+
+  const placeBet = (market: Market, side: Side) => {
+    void syncWithServer({
+      marketId: market.id,
+      side,
+      stakeTacos: stake,
+    });
   };
 
   return (
-    <div className="tacos-app-shell">
-      <div className="tacos-background" aria-hidden="true" />
-      <div className="tacos-app">
-        <header className="tacos-header">
-          <div className="tacos-brand">
-            <div className="tacos-brand-dot" />
-            <div>
-              <p className="tacos-kicker">OpenAI Internal Market</p>
-              <h1>{data.appName}</h1>
-            </div>
+    <div className="tacos-shell">
+      <div className="tacos-screen">
+        <header className="header-row">
+          <div>
+            <p className="eyebrow">OpenAI Internal Market</p>
+            <h1>🌮 {data.appName}</h1>
           </div>
-          <div className="tacos-metrics">
-            <div className="metric-pill">
-              <Layers3 size={16} />
-              <span>{data.summary.openMarkets} Markets</span>
-            </div>
-            <div className="metric-pill">
-              <Activity size={16} />
-              <span>{data.summary.avgImpliedEdgePct}% Edge</span>
-            </div>
-            <div className="metric-pill wallet-pill">
-              <Flame size={16} />
-              <span>{formatTacos(projectedAvailable)} TACOS</span>
-            </div>
+          <div className="pill-row">
+            <span className="pill">{data.summary.openMarkets} Markets</span>
+            <span className="pill">{formatTacos(data.summary.activeBets)} Total Bets</span>
+            <span className="pill">🌮 {formatTacos(data.wallet.availableTacos)} TACOS</span>
           </div>
         </header>
 
-        <section className="hero-grid">
-          <article className="hero-card glow">
-            <p className="label">Wallet</p>
-            <p className="value">{formatTacos(projectedAvailable)} TACOS</p>
-            <p className="meta">{formatTacos(projectedReserved)} reserved · {data.wallet.winRatePct}% win rate</p>
-          </article>
-          <article className="hero-card">
-            <p className="label">Risk Mode</p>
-            <p className="value caps">{data.riskMode}</p>
-            <p className="meta">Desk: {data.desk.replace("-", " ")}</p>
-          </article>
-          <article className="hero-card">
-            <p className="label">Lifetime PnL</p>
-            <p className="value positive">+{formatTacos(data.wallet.lifetimePnlTacos)} TACOS</p>
-            <p className="meta">Exposure {data.wallet.exposurePct}%</p>
-          </article>
+        <section className="wallet-card">
+          <p>Wallet 🌮</p>
+          <h2>{formatTacos(data.wallet.availableTacos)} TACOS</h2>
+          <small>
+            {formatTacos(data.wallet.reservedTacos)} reserved · {data.wallet.lifetimePnlTacos >= 0 ? "+" : ""}
+            {formatTacos(data.wallet.lifetimePnlTacos)} lifetime
+          </small>
         </section>
 
-        <section className="content-grid">
-          <div className="markets-column glass">
-            <div className="section-header">
-              <h2>Live Markets</h2>
-              <span>{data.markets.length} active</span>
-            </div>
-            <div className="market-list">
-              {data.markets.map((market, index) => {
-                const momentum = badgeForMomentum(market.momentum);
-                const isSelected = selectedMarket?.id === market.id;
-                return (
-                  <motion.button
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.28, delay: index * 0.04 }}
-                    type="button"
-                    key={market.id}
-                    className={`market-card ${isSelected ? "selected" : ""}`}
-                    onClick={() =>
-                      setWidgetState((prev) => ({
-                        selectedMarketId: market.id,
-                        selectedSide: prev?.selectedSide ?? "YES",
-                        stakeTacos: prev?.stakeTacos ?? 80,
-                        localTickets: prev?.localTickets ?? [],
-                      }))
-                    }
-                  >
-                    <div className="market-topline">
-                      <span className="category-chip">{market.category}</span>
-                      {market.featured ? <span className="featured-chip">Featured</span> : null}
-                    </div>
-                    <h3>{market.title}</h3>
-                    <p>{market.subtitle}</p>
+        <section className="stake-row">
+          <div className="stake-header">
+            <p>Bet size</p>
+            <button
+              type="button"
+              className="refresh-button"
+              onClick={() => void syncWithServer()}
+              disabled={loading}
+            >
+              <RefreshCw size={12} className={loading ? "spin" : ""} /> Refresh odds
+            </button>
+          </div>
+          <div>
+            {STAKE_OPTIONS.map((value) => (
+              <button
+                key={value}
+                type="button"
+                className={stake === value ? "stake-chip active" : "stake-chip"}
+                onClick={() =>
+                  setWidgetState((prev) => ({
+                    stake: value,
+                    bettorId: prev?.bettorId ?? bettorId,
+                    snapshot: prev?.snapshot ?? null,
+                  }))
+                }
+              >
+                {value} 🌮
+              </button>
+            ))}
+          </div>
+        </section>
 
-                    <div className="odds-row">
-                      <div className="odds-group yes">
-                        <strong>{Math.round(market.yesProbability * 100)}%</strong>
-                        <span>YES</span>
-                      </div>
-                      <div className="odds-group no">
-                        <strong>{Math.round((1 - market.yesProbability) * 100)}%</strong>
-                        <span>NO</span>
-                      </div>
-                    </div>
-
-                    <div className="probability-track">
-                      <div className="probability-fill" style={{ width: `${market.yesProbability * 100}%` }} />
-                    </div>
-
-                    <div className="market-foot">
-                      <span>{timeUntil(market.deadlineIso)}</span>
-                      <span className={`momentum-chip ${momentum.className}`}>
-                        <momentum.Icon size={13} />
-                        {momentum.label}
-                      </span>
-                    </div>
-                  </motion.button>
-                );
-              })}
-            </div>
+        <section className="markets-card">
+          <div className="section-head">
+            <h3>Live Markets</h3>
+            <span>{data.markets.length} active</span>
           </div>
 
-          <aside className="side-column">
-            <div className="bet-slip glass">
-              <div className="section-header">
-                <h2>Bet Slip</h2>
-                <CandlestickChart size={16} />
-              </div>
-              <p className="bet-market-title">{selectedMarket?.title ?? "Select a market"}</p>
+          <div className="markets-list">
+            {data.markets.map((market, index) => {
+              const yesPct = Math.round(market.yesProbability * 100);
+              const noPct = 100 - yesPct;
+              const tone = marketTone(market.yesProbability);
 
-              <div className="side-toggle">
-                <button
-                  type="button"
-                  className={selectedSide === "YES" ? "active yes" : "yes"}
-                  onClick={() =>
-                    setWidgetState((prev) => ({
-                      selectedMarketId: prev?.selectedMarketId ?? selectedMarket?.id ?? null,
-                      selectedSide: "YES",
-                      stakeTacos: prev?.stakeTacos ?? 80,
-                      localTickets: prev?.localTickets ?? [],
-                    }))
-                  }
+              return (
+                <motion.article
+                  key={market.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.25, delay: index * 0.05 }}
+                  className="market-item"
                 >
-                  YES @ {selectedMarket ? selectedMarket.yesPrice.toFixed(2) : "0.00"}
-                </button>
-                <button
-                  type="button"
-                  className={selectedSide === "NO" ? "active no" : "no"}
-                  onClick={() =>
-                    setWidgetState((prev) => ({
-                      selectedMarketId: prev?.selectedMarketId ?? selectedMarket?.id ?? null,
-                      selectedSide: "NO",
-                      stakeTacos: prev?.stakeTacos ?? 80,
-                      localTickets: prev?.localTickets ?? [],
-                    }))
-                  }
-                >
-                  NO @ {selectedMarket ? selectedMarket.noPrice.toFixed(2) : "0.00"}
-                </button>
-              </div>
+                  <div className="market-top">
+                    <div>
+                      <h4>{market.title}</h4>
+                      <p>{market.subtitle}</p>
+                    </div>
+                    <span className="tone-tag">{tone}</span>
+                  </div>
 
-              <div className="stake-box">
-                <label htmlFor="stakeRange">Stake: {formatTacos(stakeTacos)} TACOS</label>
-                <input
-                  id="stakeRange"
-                  type="range"
-                  min={20}
-                  max={400}
-                  step={10}
-                  value={stakeTacos}
-                  onChange={(event) => {
-                    const value = Number(event.target.value);
-                    setWidgetState((prev) => ({
-                      selectedMarketId: prev?.selectedMarketId ?? selectedMarket?.id ?? null,
-                      selectedSide: prev?.selectedSide ?? "YES",
-                      stakeTacos: value,
-                      localTickets: prev?.localTickets ?? [],
-                    }));
-                  }}
-                />
-              </div>
+                  <div className="odds-row">
+                    <strong className="yes">{yesPct}% YES</strong>
+                    <strong className="no">{noPct}% NO</strong>
+                  </div>
 
-              <dl className="calc-grid">
-                <div>
-                  <dt>Potential payout</dt>
-                  <dd>{potentialPayout.toFixed(2)} TACOS</dd>
-                </div>
-                <div>
-                  <dt>Net if win</dt>
-                  <dd className="positive">+{(potentialPayout - stakeTacos).toFixed(2)}</dd>
-                </div>
-                <div>
-                  <dt>Resolution source</dt>
-                  <dd>{selectedMarket?.resolutionSource ?? "n/a"}</dd>
-                </div>
-                <div>
-                  <dt>24h volume</dt>
-                  <dd>{selectedMarket ? formatTacos(selectedMarket.volume24hTacos) : "0"}</dd>
-                </div>
-              </dl>
+                  <div className="progress-track">
+                    <div className="progress-yes" style={{ width: `${yesPct}%` }} />
+                  </div>
 
-              <button type="button" disabled={!canPlace} className="place-button" onClick={placeBetLocally}>
-                {canPlace ? "Place simulated order" : "Insufficient TACOS"}
-              </button>
+                  <div className="action-row">
+                    <button
+                      type="button"
+                      className="btn yes"
+                      onClick={() => placeBet(market, "YES")}
+                      disabled={loading || data.wallet.availableTacos < stake}
+                    >
+                      <ArrowUpRight size={14} /> 🌮 Bet YES ({stake})
+                    </button>
+                    <button
+                      type="button"
+                      className="btn no"
+                      onClick={() => placeBet(market, "NO")}
+                      disabled={loading || data.wallet.availableTacos < stake}
+                    >
+                      <ArrowDownRight size={14} /> 🌮 Bet NO ({stake})
+                    </button>
+                  </div>
+                </motion.article>
+              );
+            })}
+          </div>
+        </section>
+
+        <section className="bottom-grid">
+          <article className="panel">
+            <div className="section-head">
+              <h3>Your Picks</h3>
+              <span>{data.openBets.length}</span>
             </div>
-
-            <div className="stacked-panels">
-              <div className="panel glass">
-                <div className="section-header">
-                  <h2>Open Positions</h2>
-                  <span>{allTickets.length}</span>
+            <div className="pick-list">
+              {data.openBets.slice(0, 6).map((bet) => (
+                <div className="pick-row" key={bet.id}>
+                  <div>
+                    <p>{bet.marketTitle}</p>
+                    <small>
+                      {bet.side} · {timeLabel(bet.placedAtIso)}
+                    </small>
+                  </div>
+                  <div className="right">
+                    <strong>{bet.stakeTacos} 🌮</strong>
+                    <small>{bet.potentialPayout.toFixed(1)} out</small>
+                  </div>
                 </div>
-                <div className="ticket-list">
-                  {allTickets.slice(0, 6).map((ticket) => (
-                    <div className="ticket-row" key={ticket.id}>
-                      <div>
-                        <p>{ticket.marketTitle}</p>
-                        <small>{formatTime(ticket.placedAtIso)} · {ticket.side}</small>
-                      </div>
-                      <div className="ticket-values">
-                        <strong>{ticket.stakeTacos}</strong>
-                        <small>{ticket.potentialPayout.toFixed(1)} out</small>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="panel glass">
-                <div className="section-header">
-                  <h2>Top Traders</h2>
-                  <Trophy size={16} />
-                </div>
-                <div className="leaderboard-list">
-                  {data.leaderboard.map((entry) => (
-                    <div className="leader-row" key={entry.alias}>
-                      <span>#{entry.rank} {entry.alias}</span>
-                      <span className="positive">+{entry.roiPct}%</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="panel glass">
-                <div className="section-header">
-                  <h2>Activity Feed</h2>
-                  <span>{data.feed.length}</span>
-                </div>
-                <div className="feed-list">
-                  {data.feed.map((event) => (
-                    <div key={event.id} className={`feed-row ${event.severity}`}>
-                      <span className="dot" />
-                      <p>{event.text}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              ))}
             </div>
-          </aside>
+          </article>
+
+          <article className="panel">
+            <div className="section-head">
+              <h3>Market Pulse</h3>
+              <Sparkles size={14} />
+            </div>
+            <ul className="pulse-list">
+              {data.activity.map((line) => (
+                <li key={line}>{line}</li>
+              ))}
+            </ul>
+          </article>
         </section>
       </div>
     </div>

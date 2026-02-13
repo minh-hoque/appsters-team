@@ -80,7 +80,7 @@ function wrapEntryPlugin(
   };
 }
 
-fs.rmSync(outDir, { recursive: true, force: true });
+fs.mkdirSync(outDir, { recursive: true });
 
 for (const file of entries) {
   const name = path.basename(path.dirname(file));

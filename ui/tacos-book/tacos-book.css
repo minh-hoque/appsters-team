@@ -1,532 +1,414 @@
-.tacos-app-shell {
-  position: relative;
+.tacos-shell {
   width: 100%;
-  min-height: 680px;
-  overflow: hidden;
-  border-radius: 28px;
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  background: linear-gradient(180deg, #f8fbfb 0%, #eef3f3 100%);
-  color: #0f1714;
-  font-family: "Soehne", "Geist", "Avenir Next", "Segoe UI", sans-serif;
+  color: #14211d;
+  font-family: "Space Grotesk", "Soehne", "Avenir Next", "Segoe UI", sans-serif;
 }
 
-.tacos-background {
-  position: absolute;
-  inset: -30%;
+.tacos-screen {
+  border-radius: 26px;
+  border: 1px solid rgba(88, 120, 113, 0.35);
   background:
-    radial-gradient(circle at 18% 20%, rgba(16, 163, 127, 0.24), transparent 48%),
-    radial-gradient(circle at 80% 12%, rgba(0, 0, 0, 0.15), transparent 54%),
-    radial-gradient(circle at 65% 80%, rgba(16, 163, 127, 0.14), transparent 42%);
-  filter: blur(30px);
-  pointer-events: none;
-}
-
-.tacos-app {
-  position: relative;
-  z-index: 1;
-  display: grid;
-  gap: 18px;
+    radial-gradient(circle at 12% 8%, rgba(71, 227, 181, 0.22), transparent 35%),
+    linear-gradient(180deg, #b5d1cb 0%, #bcd6d1 100%);
   padding: 18px;
+  display: grid;
+  gap: 14px;
 }
 
-.tacos-header {
+.header-row {
   display: flex;
-  align-items: center;
   justify-content: space-between;
   gap: 12px;
+  align-items: center;
   flex-wrap: wrap;
 }
 
-.tacos-brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.tacos-brand-dot {
-  width: 18px;
-  height: 18px;
-  border-radius: 999px;
-  background: linear-gradient(145deg, #10a37f 0%, #72ffd0 100%);
-  box-shadow: 0 0 24px rgba(16, 163, 127, 0.7);
-}
-
-.tacos-kicker {
+.eyebrow {
   margin: 0;
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
+  font-size: 13px;
   letter-spacing: 0.08em;
-  color: rgba(14, 26, 22, 0.68);
+  text-transform: uppercase;
+  color: rgba(20, 33, 29, 0.66);
+  font-weight: 600;
 }
 
-.tacos-brand h1 {
-  margin: 0;
-  font-size: 22px;
-  letter-spacing: -0.02em;
+.header-row h1 {
+  margin: 2px 0 0;
+  font-size: 50px;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  font-weight: 650;
 }
 
-.tacos-metrics {
+.pill-row {
   display: flex;
-  align-items: center;
   gap: 8px;
   flex-wrap: wrap;
 }
 
-.metric-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 7px 10px;
+.pill {
   border-radius: 999px;
-  border: 1px solid rgba(16, 23, 20, 0.12);
-  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(28, 43, 38, 0.18);
+  background: rgba(237, 245, 243, 0.88);
+  padding: 8px 12px;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 650;
 }
 
-.wallet-pill {
-  background: linear-gradient(145deg, rgba(16, 163, 127, 0.18), rgba(255, 255, 255, 0.86));
-}
-
-.hero-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
-}
-
-.hero-card {
+.wallet-card,
+.markets-card,
+.panel,
+.stake-row {
   border-radius: 18px;
+  border: 1px solid rgba(92, 130, 122, 0.32);
+  background: rgba(241, 245, 244, 0.82);
   padding: 14px;
-  border: 1px solid rgba(20, 28, 25, 0.14);
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(8px);
 }
 
-.hero-card.glow {
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.82), rgba(16, 163, 127, 0.2));
-}
-
-.hero-card .label {
+.wallet-card p {
   margin: 0;
-  font-size: 11px;
+  font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: rgba(15, 23, 20, 0.64);
+  color: rgba(20, 33, 29, 0.62);
 }
 
-.hero-card .value {
+.wallet-card h2 {
   margin: 6px 0 2px;
-  font-size: 24px;
-  font-weight: 700;
+  font-size: 48px;
+  line-height: 1;
   letter-spacing: -0.03em;
+  font-weight: 700;
 }
 
-.hero-card .value.caps {
-  text-transform: uppercase;
+.wallet-card small {
+  color: rgba(20, 33, 29, 0.68);
+  font-size: 12px;
 }
 
-.hero-card .meta {
+.stake-row {
+  display: grid;
+  gap: 8px;
+}
+
+.stake-row p {
   margin: 0;
   font-size: 12px;
-  color: rgba(15, 23, 20, 0.72);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: rgba(20, 33, 29, 0.65);
 }
 
-.content-grid {
-  display: grid;
-  grid-template-columns: 1.6fr 1fr;
-  gap: 10px;
-}
-
-.glass {
-  border-radius: 20px;
-  border: 1px solid rgba(17, 24, 22, 0.12);
-  background: rgba(255, 255, 255, 0.72);
-  backdrop-filter: blur(10px);
-}
-
-.section-header {
+.stake-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: 8px;
 }
 
-.section-header h2 {
-  margin: 0;
-  font-size: 14px;
-  font-weight: 700;
-  letter-spacing: 0.01em;
-}
-
-.section-header span {
+.refresh-button {
+  border: 1px solid rgba(28, 43, 38, 0.2);
+  background: rgba(255, 255, 255, 0.72);
+  border-radius: 999px;
+  padding: 6px 10px;
   font-size: 11px;
-  color: rgba(15, 23, 20, 0.62);
+  font-weight: 650;
+  color: #19302a;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
 }
 
-.markets-column {
-  padding: 14px;
+.refresh-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
-.market-list {
-  margin-top: 12px;
+.stake-row > div {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.stake-chip {
+  border: 1px solid rgba(28, 43, 38, 0.18);
+  background: rgba(255, 255, 255, 0.72);
+  border-radius: 999px;
+  padding: 8px 11px;
+  font-size: 12px;
+  font-weight: 650;
+  color: #19302a;
+  cursor: pointer;
+}
+
+.stake-chip.active {
+  background: linear-gradient(145deg, #17a37f, #0f8f6d);
+  color: #f7fffd;
+  border-color: rgba(15, 143, 109, 0.8);
+}
+
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.section-head h3 {
+  margin: 0;
+  font-size: 16px;
+  letter-spacing: -0.01em;
+}
+
+.section-head span {
+  font-size: 12px;
+  color: rgba(20, 33, 29, 0.6);
+}
+
+.markets-list {
+  margin-top: 10px;
   display: grid;
   gap: 10px;
 }
 
-.market-card {
-  width: 100%;
-  text-align: left;
+.market-item {
   border-radius: 16px;
-  border: 1px solid rgba(20, 29, 26, 0.12);
-  background: linear-gradient(150deg, rgba(255, 255, 255, 0.88), rgba(247, 251, 250, 0.88));
+  border: 1px solid rgba(88, 126, 119, 0.4);
+  background: rgba(250, 252, 252, 0.88);
   padding: 12px;
   display: grid;
   gap: 8px;
-  cursor: pointer;
-  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.market-card:hover {
-  transform: translateY(-1px);
-  border-color: rgba(16, 163, 127, 0.4);
-  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.1);
-}
-
-.market-card.selected {
-  border-color: rgba(16, 163, 127, 0.58);
-  box-shadow: 0 16px 32px rgba(16, 163, 127, 0.16);
-}
-
-.market-topline {
+.market-top {
   display: flex;
-  align-items: center;
+  justify-content: space-between;
   gap: 8px;
+  align-items: flex-start;
 }
 
-.category-chip,
-.featured-chip,
-.momentum-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
+.market-top h4 {
+  margin: 0;
+  font-size: 27px;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+}
+
+.market-top p {
+  margin: 5px 0 0;
+  font-size: 13px;
+  color: rgba(20, 33, 29, 0.63);
+}
+
+.tone-tag {
   border-radius: 999px;
-  padding: 3px 8px;
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.category-chip {
-  background: rgba(15, 24, 20, 0.08);
-  color: rgba(15, 24, 20, 0.74);
-}
-
-.featured-chip {
   background: rgba(16, 163, 127, 0.15);
-  color: #0b6f56;
-}
-
-.market-card h3 {
-  margin: 0;
-  font-size: 15px;
-  line-height: 1.32;
-}
-
-.market-card p {
-  margin: 0;
-  color: rgba(15, 23, 20, 0.64);
-  font-size: 12px;
+  border: 1px solid rgba(16, 163, 127, 0.26);
+  padding: 4px 8px;
+  font-size: 11px;
+  font-weight: 650;
+  white-space: nowrap;
 }
 
 .odds-row {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   gap: 8px;
 }
 
-.odds-group {
-  display: flex;
-  align-items: baseline;
-  gap: 6px;
-}
-
-.odds-group strong {
-  font-size: 20px;
+.odds-row strong {
+  font-size: 34px;
   letter-spacing: -0.03em;
+  line-height: 1;
 }
 
-.odds-group span {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
+.odds-row .yes {
+  color: #108767;
 }
 
-.odds-group.yes strong,
-.odds-group.yes span {
-  color: #0c8a69;
+.odds-row .no {
+  color: #1f2826;
 }
 
-.odds-group.no strong,
-.odds-group.no span {
-  color: #1f2825;
-}
-
-.probability-track {
+.progress-track {
   width: 100%;
-  height: 8px;
+  height: 11px;
   border-radius: 999px;
-  background: rgba(15, 23, 20, 0.12);
+  background: rgba(31, 40, 38, 0.13);
   overflow: hidden;
 }
 
-.probability-fill {
+.progress-yes {
   height: 100%;
   border-radius: 999px;
-  background: linear-gradient(90deg, #10a37f 0%, #0f7d62 100%);
+  background: linear-gradient(90deg, #0ca37c 0%, #0a7c61 100%);
 }
 
-.market-foot {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  font-size: 11px;
-  color: rgba(15, 23, 20, 0.65);
-}
-
-.momentum-chip.is-up {
-  background: rgba(16, 163, 127, 0.14);
-  color: #0c8a69;
-}
-
-.momentum-chip.is-down {
-  background: rgba(225, 73, 73, 0.13);
-  color: #c53636;
-}
-
-.momentum-chip.is-flat {
-  background: rgba(13, 20, 18, 0.1);
-  color: rgba(13, 20, 18, 0.78);
-}
-
-.side-column {
-  display: grid;
-  gap: 10px;
-}
-
-.bet-slip,
-.panel {
-  padding: 14px;
-}
-
-.bet-market-title {
-  margin: 10px 0;
-  font-size: 13px;
-  font-weight: 600;
-  line-height: 1.36;
-}
-
-.side-toggle {
+.action-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
 }
 
-.side-toggle button {
-  border-radius: 10px;
-  border: 1px solid rgba(15, 23, 20, 0.15);
-  padding: 8px;
-  font-size: 12px;
-  font-weight: 700;
-  background: rgba(255, 255, 255, 0.8);
-  cursor: pointer;
-}
-
-.side-toggle button.active.yes {
-  border-color: rgba(16, 163, 127, 0.75);
-  background: rgba(16, 163, 127, 0.15);
-  color: #0c8a69;
-}
-
-.side-toggle button.active.no {
-  border-color: rgba(31, 40, 37, 0.6);
-  background: rgba(31, 40, 37, 0.13);
-  color: #1f2825;
-}
-
-.stake-box {
-  margin-top: 12px;
-  display: grid;
-  gap: 6px;
-}
-
-.stake-box label {
-  font-size: 12px;
-  font-weight: 600;
-}
-
-.stake-box input[type="range"] {
-  width: 100%;
-  accent-color: #10a37f;
-}
-
-.calc-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin: 12px 0;
-}
-
-.calc-grid dt {
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: rgba(15, 23, 20, 0.55);
-}
-
-.calc-grid dd {
-  margin: 2px 0 0;
-  font-size: 12px;
-  font-weight: 600;
-}
-
-.positive {
-  color: #0c8a69;
-}
-
-.place-button {
-  width: 100%;
+.btn {
   border: none;
-  border-radius: 12px;
-  padding: 10px;
-  font-size: 13px;
+  border-radius: 10px;
+  padding: 9px 10px;
+  font-size: 12px;
   font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
   cursor: pointer;
-  color: #f8fffd;
-  background: linear-gradient(135deg, #10a37f 0%, #08765c 100%);
-  transition: filter 0.2s ease, transform 0.2s ease;
 }
 
-.place-button:hover:not(:disabled) {
-  transform: translateY(-1px);
-  filter: brightness(1.04);
-}
-
-.place-button:disabled {
-  opacity: 0.42;
+.btn:disabled {
+  opacity: 0.56;
   cursor: not-allowed;
 }
 
-.stacked-panels {
+.btn.yes {
+  background: linear-gradient(145deg, #16a17d, #0f8d6d);
+  color: #f6fffd;
+}
+
+.btn.no {
+  background: linear-gradient(145deg, #273533, #1d2927);
+  color: #f3f4f4;
+}
+
+.bottom-grid {
   display: grid;
+  grid-template-columns: 1.4fr 1fr;
   gap: 10px;
 }
 
-.ticket-list,
-.leaderboard-list,
-.feed-list {
-  margin-top: 10px;
+.pick-list {
+  margin-top: 8px;
   display: grid;
-  gap: 8px;
+  gap: 7px;
 }
 
-.ticket-row,
-.leader-row,
-.feed-row {
+.pick-row {
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid rgba(89, 126, 119, 0.28);
   display: flex;
-  align-items: center;
   justify-content: space-between;
   gap: 8px;
-  border-radius: 10px;
   padding: 8px;
-  background: rgba(255, 255, 255, 0.76);
-  border: 1px solid rgba(16, 24, 21, 0.1);
 }
 
-.ticket-row p {
+.pick-row p {
   margin: 0;
   font-size: 12px;
   font-weight: 600;
 }
 
-.ticket-row small,
-.ticket-values small {
-  color: rgba(15, 23, 20, 0.6);
+.pick-row small {
+  color: rgba(20, 33, 29, 0.62);
   font-size: 11px;
 }
 
-.ticket-values {
+.pick-row .right {
   text-align: right;
 }
 
-.ticket-values strong {
+.pick-row .right strong {
   display: block;
   font-size: 13px;
 }
 
-.leader-row {
+.pulse-list {
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 7px;
+}
+
+.pulse-list li {
+  border-radius: 10px;
+  border: 1px solid rgba(89, 126, 119, 0.28);
+  background: rgba(255, 255, 255, 0.75);
+  padding: 8px 10px;
   font-size: 12px;
-  font-weight: 600;
+  line-height: 1.4;
 }
 
-.feed-row {
-  justify-content: flex-start;
-  font-size: 12px;
+.header-row h1,
+.wallet-card h2,
+.market-top h4,
+.odds-row strong {
+  font-family: "Space Grotesk", "Soehne", "Avenir Next", "Segoe UI", sans-serif;
 }
 
-.feed-row .dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 999px;
-  flex-shrink: 0;
-  background: rgba(15, 23, 20, 0.35);
+.spin {
+  animation: spin 0.9s linear infinite;
 }
 
-.feed-row.win .dot {
-  background: #10a37f;
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
-.feed-row.risk .dot {
-  background: #db5050;
-}
-
-.feed-row p {
-  margin: 0;
-  line-height: 1.35;
-}
-
-@media (max-width: 980px) {
-  .hero-grid {
-    grid-template-columns: 1fr;
+@media (max-width: 960px) {
+  .header-row h1 {
+    font-size: 38px;
   }
 
-  .content-grid {
+  .wallet-card h2 {
+    font-size: 38px;
+  }
+
+  .market-top h4 {
+    font-size: 22px;
+  }
+
+  .odds-row strong {
+    font-size: 28px;
+  }
+
+  .bottom-grid {
     grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 640px) {
-  .tacos-app-shell {
-    min-height: 560px;
-    border-radius: 20px;
-  }
-
-  .tacos-app {
+  .tacos-screen {
+    border-radius: 18px;
     padding: 12px;
-    gap: 12px;
+    gap: 10px;
   }
 
-  .tacos-brand h1 {
-    font-size: 19px;
+  .header-row h1 {
+    font-size: 31px;
   }
 
-  .hero-card .value {
-    font-size: 21px;
+  .wallet-card h2 {
+    font-size: 30px;
   }
 
-  .calc-grid {
+  .market-top {
+    display: block;
+  }
+
+  .market-top h4 {
+    font-size: 20px;
+  }
+
+  .odds-row strong {
+    font-size: 23px;
+  }
+
+  .action-row {
     grid-template-columns: 1fr;
   }
 }
