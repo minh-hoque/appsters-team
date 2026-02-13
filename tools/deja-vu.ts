@@ -111,7 +111,27 @@ function resolveHotspot(
     }
   }
 
-  return null;
+  if (frame.hotspots.length === 0) {
+    return null;
+  }
+
+  let nearestHotspot: StoryHotspot | null = null;
+  let nearestDistance = Number.POSITIVE_INFINITY;
+
+  for (const hotspot of frame.hotspots) {
+    const centerX = hotspot.bbox.x + hotspot.bbox.w / 2;
+    const centerY = hotspot.bbox.y + hotspot.bbox.h / 2;
+    const dx = centerX - click.x;
+    const dy = centerY - click.y;
+    const distance = dx * dx + dy * dy;
+
+    if (distance < nearestDistance) {
+      nearestDistance = distance;
+      nearestHotspot = hotspot;
+    }
+  }
+
+  return nearestHotspot;
 }
 
 function buildSuccessResponse(

@@ -87,23 +87,6 @@ type StoryToolInput = {
   hotspotId?: string;
 };
 
-function isSameStoryOutput(left: StoryOutput | null, right: StoryOutput): boolean {
-  if (!left) {
-    return false;
-  }
-
-  return (
-    left.storyId === right.storyId &&
-    left.frame.id === right.frame.id &&
-    left.transition.fromFrameId === right.transition.fromFrameId &&
-    left.transition.toFrameId === right.transition.toFrameId &&
-    left.transition.hotspotId === right.transition.hotspotId &&
-    left.transition.missedClick === right.transition.missedClick &&
-    left.progress.step === right.progress.step &&
-    left.progress.total === right.progress.total
-  );
-}
-
 function getImageUrl(imageKey: string): string {
   const candidate = frameMap[imageKey as keyof typeof frameMap];
   if (candidate) {
@@ -164,11 +147,6 @@ function App() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const initializedRef = useRef(false);
-  const storyOutputRef = useRef<StoryOutput | null>(storyOutput);
-
-  useEffect(() => {
-    storyOutputRef.current = storyOutput;
-  }, [storyOutput]);
 
   const persistWidgetState = useCallback(
     (output: StoryOutput) => {
@@ -232,20 +210,6 @@ function App() {
     initializedRef.current = true;
     void runTransition({ action: "start" });
   }, [persistWidgetState, rawToolOutput, runTransition, widgetState]);
-
-  useEffect(() => {
-    if (!initializedRef.current) {
-      return;
-    }
-
-    const parsed = normalizeToolOutput(rawToolOutput);
-    if (!parsed || isSameStoryOutput(storyOutputRef.current, parsed)) {
-      return;
-    }
-
-    setStoryOutput(parsed);
-    persistWidgetState(parsed);
-  }, [persistWidgetState, rawToolOutput]);
 
   const canInteract = !isLoading && !!storyOutput;
   const frameImageUrl = storyOutput ? getImageUrl(storyOutput.frame.imageKey) : frameF01;
