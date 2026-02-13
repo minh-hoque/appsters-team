@@ -1,31 +1,31 @@
-# Deja Vu Interactive Story Narrative (v1)
+# Deja Vu Interactive Story Narrative (v2)
 
-## Frame f01 - The Choice of Tempo
-You stand at a crossroads where two versions of your evening meet: one begins before sunrise with chai and stillness; the other starts at midnight with code and electric focus.
+## Frame f01 - Hotel Desk, Dosa Going Cold
+Yesterday evening, Anurag stared at an unfinished Skills API presentation while a dosa cooled beside his laptop. Slack pings about the ADE dinner kept appearing, and he had to decide what to do first.
 
-## Frame f02 - Old Delhi Morning
-Steam rises from a clay cup as the city wakes. You notice tiny details others miss, and the day opens with a sense of purpose.
+## Frame f02 - Slide Panic Spiral
+Architecture diagrams, speaker notes, and last-minute edits piled up. The more he tried to perfect every slide, the less progress he felt.
 
-## Frame f03 - Rooftop Hacknight
-Laptop glow, cool air, and the hum of possibility. You prototype fast, then pause to ask if this build should also move people.
+## Frame f03 - Hallway Reset
+He stepped into the hallway to breathe, phone in hand, reading the ADE dinner thread. He could still choose connection over panic.
 
-## Frame f04 - Spice Bazaar Sprint
-Color, noise, momentum. You weave through crowds like a strategist under pressure, deciding whether to chase the next frontier or invest in people first.
+## Frame f04 - Empty Hotel Grind
+He stayed back, skipped dinner, and kept forcing slides alone. The room got quieter, but the work did not get clearer.
 
-## Frame f05 - Riverfront Reflection
-At the water’s edge, the world quiets. You map your next chapter by intuition, discipline, and what actually matters.
+## Frame f05 - ADE Dinner Decision
+He went to the ADE dinner. The table was lively, the food was great, and for the first time that day he stopped spiraling.
 
-## Frame f06 - Garage Jam
-Rhythms lock in with friends. You realize your best decisions happen when craft and connection happen in the same room.
+## Frame f06 - Back Late, Clock at 11:47 PM
+Back at the hotel, the stress returned instantly: not enough slides, not enough time. Now the decision had to be smarter, not louder.
 
-## Frame f07 - Chess and Chai Debate
-Every move has tradeoffs. You play patiently, listening more than speaking, then choose what kind of impact you want to leave.
+## Frame f07 - Early Return, Same Block
+Even leaving dinner early did not fix the core issue. He still had a half-built deck and a ticking clock.
 
-## Frame f08 - Ending: Trailblazer
-You choose velocity with intent. The result is bold work, visible outcomes, and a path others begin to follow.
+## Frame f08 - Ending: Brute Force Night
+He pushed manually into the night, exhausted and unhappy. The deck was barely done, and the process took a heavy toll.
 
-## Frame f09 - Ending: Heartline
-You choose people-centered leadership. The result is trust, resilient teams, and a life that feels aligned.
+## Frame f09 - Ending: Codex + Minh Skill Save
+He launched a Codex task with Minh’s slide skill, and the deck assembled automatically. Panic turned into relief, and he finally slept with confidence.
 
-## Frame f10 - Ending: Craftsperson
-You choose mastery over noise. The result is deep skill, timeless work, and quiet confidence in every step.
+## Frame f10 - Ending: Missed Momentum
+He shut the laptop without a real plan and hoped tomorrow would sort itself out. The stress was postponed, not solved.

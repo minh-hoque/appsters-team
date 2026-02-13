@@ -1,30 +1,22 @@
-# Deja Vu Profile (Demo Curated)
+# Deja Vu Profile (Real Scenario)
 
-This demo profile is intentionally curated for a pre-authored interactive story.
-It is a starter profile and can be replaced with real details you provide.
+This narrative is based on a concrete timeline:
 
-## Core traits
+- Anurag likes dosa.
+- Yesterday he was stressed preparing a presentation on the Skills API.
+- He was considering skipping the ADE team dinner to finish slides.
+- He chose to go to dinner and had a genuinely good time.
+- He returned to the hotel late, still stressed about unfinished slides.
+- He launched a Codex task using a skill Minh created, which generated the slides automatically.
 
-- Thoughtful, curious, and calm under pressure
-- Balances creative expression with technical depth
-- Values close friendships and meaningful rituals
+## Story goals
 
-## Interests
-
-- Late-night coding and shipping side projects
-- Indie music, jam sessions, and live performance energy
-- Chai, street food, and city exploration
-- Trekking, sunrise views, and reflective long walks
-- Mentoring and strategy conversations
-
-## Tone preferences for the story
-
-- Cinematic but grounded
-- Warm, aspirational, and emotionally specific
-- Interactive choices that feel consequential, not random
+- Show the emotional arc: stress -> decision -> connection -> late-night pressure -> smart leverage.
+- Keep the tone human and grounded, with believable work details.
+- End with practical optimism: right tools and teammates can turn panic into execution.
 
 ## Guardrails
 
-- Keep language respectful and non-invasive
-- Avoid sensitive personal claims not explicitly provided by user
-- Focus on strengths, aspirations, and memorable moments
+- Do not invent sensitive personal details beyond this scenario.
+- Keep all scenes respectful, professional, and non-invasive.
+- Keep references to people and teams positive and realistic.

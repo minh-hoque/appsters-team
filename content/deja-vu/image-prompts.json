@@ -4,57 +4,60 @@
   "quality": "high",
   "size": "1536x1024",
   "format": "webp",
-  "styleGuide": "Cinematic, ultra-detailed, warm-but-real color grading, realistic lighting, modern India urban + nature blend, no text overlays, no logos, no watermark.",
+  "referenceImagePath": "assets/anurag_real_image.jpeg",
+  "referenceImageMimeType": "image/jpeg",
+  "identityInstruction": "Keep the protagonist visually consistent with the provided reference photo of Anurag across all frames.",
+  "styleGuide": "Cinematic realism, natural skin tones, high-detail photography look, believable conference/hotel settings, no text overlay, no watermarks, no logos.",
   "frames": [
     {
       "id": "f01",
       "imageKey": "f01",
-      "prompt": "Split-scene cinematic composition: left side dawn chai stall with soft sunlight and mist, right side midnight rooftop coding setup with laptop glow and city skyline; single male protagonist from behind at a crossroads between both worlds, dramatic perspective, emotionally charged, realistic photography style."
+      "prompt": "Hotel desk at dusk with open laptop showing unfinished Skills API slide deck, dosa plate beside keyboard going cold, phone lit with ADE team dinner messages, protagonist stressed but focused."
     },
     {
       "id": "f02",
       "imageKey": "f02",
-      "prompt": "Early morning Old Delhi lane, steam from clay chai cups, quiet street coming alive, warm amber sunlight, thoughtful young man observing details, cinematic realism, rich texture, shallow depth of field."
+      "prompt": "Close, tense workspace scene: multiple slide thumbnails, architecture diagrams, sticky notes, coffee cups, anxious expression, presentation prep chaos in hotel room."
     },
     {
       "id": "f03",
       "imageKey": "f03",
-      "prompt": "Midnight rooftop hacknight scene, open laptop, notes, subtle neon city lights, cool blue tones with warm skin highlights, protagonist focused yet reflective, cinematic realistic style."
+      "prompt": "Hotel hallway reset moment: protagonist standing near elevator, deep breath, phone in hand with dinner chat open, warm corridor lights, reflective expression."
     },
     {
       "id": "f04",
       "imageKey": "f04",
-      "prompt": "High-energy spice bazaar in India, dynamic crowd movement, colorful powders and fabrics, protagonist moving with intention through motion blur, cinematic realism, strong contrast and detail."
+      "prompt": "Lonely late evening in hotel room, untouched room-service tray, laptop glow, messy slides still incomplete, isolated mood, determined but frustrated body language."
     },
     {
       "id": "f05",
       "imageKey": "f05",
-      "prompt": "Calm riverfront at dusk, reflective water, subtle city silhouette, protagonist seated on steps journaling quietly, contemplative mood, natural color palette, ultra-real cinematic frame."
+      "prompt": "ADE team dinner at lively restaurant, warm lighting, smiling colleagues, dosa and shared dishes on table, protagonist relaxed and enjoying real conversation."
     },
     {
       "id": "f06",
       "imageKey": "f06",
-      "prompt": "Cozy garage jam session with friends, guitar and percussion, warm tungsten practical lights, candid joyful expressions, protagonist in creative flow, realistic cinematic photography."
+      "prompt": "Back in hotel room late night, digital clock reading 11:47 PM, protagonist seated with laptop and unfinished presentation, tension returning after dinner."
     },
     {
       "id": "f07",
       "imageKey": "f07",
-      "prompt": "Chess and chai table in a modern cafe, strategic atmosphere, close-up board with expressive hands, protagonist listening in thoughtful debate, cinematic realism, soft window light."
+      "prompt": "Early return scenario: quiet room, half-finished deck still stuck, protagonist staring at slide flow in frustration, trying to force progress but blocked."
     },
     {
       "id": "f08",
       "imageKey": "f08",
-      "prompt": "Triumphant ending scene, protagonist standing on hill overlooking city at sunrise, symbolic sense of progress and scale, dramatic sky, cinematic wide shot, photoreal, uplifting tone."
+      "prompt": "Exhausted brute-force ending: dim room before dawn, protagonist slumped over laptop, messy slide timeline, fatigue visible, emotional burnout tone."
     },
     {
       "id": "f09",
       "imageKey": "f09",
-      "prompt": "Heart-centered ending scene, protagonist with close friends laughing in warm evening light on a terrace, trust and connection, intimate realistic cinematic portrait style."
+      "prompt": "Success ending: protagonist launches Codex task with Minh's slide skill, polished deck auto-generated on screen, relieved smile, calm hotel room energy, confident finish."
     },
     {
       "id": "f10",
       "imageKey": "f10",
-      "prompt": "Craft mastery ending scene, protagonist in focused studio workspace refining a project with precision, layered tools and notebooks, calm confidence, cinematic photoreal detail."
+      "prompt": "Missed momentum ending: closed laptop on desk, protagonist sitting on bed looking uncertain, city lights outside, unresolved stress mood."
     }
   ]
 }

@@ -5,146 +5,146 @@
   "frames": [
     {
       "id": "f01",
-      "title": "The Choice of Tempo",
-      "narration": "You stand at a crossroads where two versions of your evening meet: one begins before sunrise with chai and stillness; the other starts at midnight with code and electric focus.",
+      "title": "Hotel Desk, Dosa Going Cold",
+      "narration": "Yesterday evening, Anurag stared at an unfinished Skills API presentation while a dosa cooled beside his laptop. Slack pings about the ADE dinner kept appearing, and he had to decide what to do first.",
       "imageKey": "f01",
       "isEnding": false,
       "hotspots": [
         {
-          "id": "dawn-chai",
-          "label": "Follow the dawn chai path",
-          "bbox": { "x": 0.08, "y": 0.18, "w": 0.34, "h": 0.66 },
+          "id": "grind-first",
+          "label": "Keep grinding slides now",
+          "bbox": { "x": 0.08, "y": 0.2, "w": 0.36, "h": 0.62 },
           "nextFrameId": "f02"
         },
         {
-          "id": "midnight-code",
-          "label": "Step into midnight code",
-          "bbox": { "x": 0.58, "y": 0.16, "w": 0.34, "h": 0.68 },
+          "id": "step-out",
+          "label": "Step out and reset",
+          "bbox": { "x": 0.56, "y": 0.2, "w": 0.36, "h": 0.62 },
           "nextFrameId": "f03"
         }
       ]
     },
     {
       "id": "f02",
-      "title": "Old Delhi Morning",
-      "narration": "Steam rises from a clay cup as the city wakes. You notice tiny details others miss, and the day opens with a sense of purpose.",
+      "title": "Slide Panic Spiral",
+      "narration": "Architecture diagrams, speaker notes, and last-minute edits piled up. The more he tried to perfect every slide, the less progress he felt.",
       "imageKey": "f02",
       "isEnding": false,
       "hotspots": [
         {
-          "id": "bazaar-sprint",
-          "label": "Chase the bazaar momentum",
-          "bbox": { "x": 0.12, "y": 0.24, "w": 0.32, "h": 0.58 },
+          "id": "skip-dinner",
+          "label": "Tell ADE you'll skip dinner",
+          "bbox": { "x": 0.12, "y": 0.24, "w": 0.34, "h": 0.56 },
           "nextFrameId": "f04"
         },
         {
-          "id": "river-reflection",
-          "label": "Take the riverfront path",
-          "bbox": { "x": 0.56, "y": 0.24, "w": 0.32, "h": 0.58 },
+          "id": "go-anyway",
+          "label": "Go to dinner anyway",
+          "bbox": { "x": 0.54, "y": 0.24, "w": 0.34, "h": 0.56 },
           "nextFrameId": "f05"
         }
       ]
     },
     {
       "id": "f03",
-      "title": "Rooftop Hacknight",
-      "narration": "Laptop glow, cool air, and the hum of possibility. You prototype fast, then pause to ask if this build should also move people.",
+      "title": "Hallway Reset",
+      "narration": "He stepped into the hallway to breathe, phone in hand, reading the ADE dinner thread. He could still choose connection over panic.",
       "imageKey": "f03",
       "isEnding": false,
       "hotspots": [
         {
-          "id": "garage-jam",
-          "label": "Join the garage jam",
-          "bbox": { "x": 0.1, "y": 0.22, "w": 0.35, "h": 0.6 },
-          "nextFrameId": "f06"
+          "id": "join-dinner",
+          "label": "Join the ADE dinner",
+          "bbox": { "x": 0.1, "y": 0.22, "w": 0.36, "h": 0.6 },
+          "nextFrameId": "f05"
         },
         {
-          "id": "chess-debate",
-          "label": "Enter the chess and chai debate",
-          "bbox": { "x": 0.55, "y": 0.22, "w": 0.35, "h": 0.6 },
-          "nextFrameId": "f07"
+          "id": "stay-hotel",
+          "label": "Stay back at hotel",
+          "bbox": { "x": 0.54, "y": 0.22, "w": 0.36, "h": 0.6 },
+          "nextFrameId": "f04"
         }
       ]
     },
     {
       "id": "f04",
-      "title": "Spice Bazaar Sprint",
-      "narration": "Color, noise, momentum. You weave through crowds like a strategist under pressure, deciding whether to chase the next frontier or invest in people first.",
+      "title": "Empty Hotel Grind",
+      "narration": "He stayed back, skipped dinner, and kept forcing slides alone. The room got quieter, but the work did not get clearer.",
       "imageKey": "f04",
       "isEnding": false,
       "hotspots": [
         {
-          "id": "trailblazer-finish",
-          "label": "Choose velocity and scale",
-          "bbox": { "x": 0.14, "y": 0.2, "w": 0.32, "h": 0.62 },
+          "id": "bruteforce-night",
+          "label": "Keep brute-forcing manually",
+          "bbox": { "x": 0.12, "y": 0.24, "w": 0.34, "h": 0.56 },
           "nextFrameId": "f08"
         },
         {
-          "id": "heartline-finish",
-          "label": "Choose people and trust",
-          "bbox": { "x": 0.56, "y": 0.2, "w": 0.32, "h": 0.62 },
-          "nextFrameId": "f09"
+          "id": "rejoin-flow",
+          "label": "Reset and choose leverage",
+          "bbox": { "x": 0.54, "y": 0.24, "w": 0.34, "h": 0.56 },
+          "nextFrameId": "f06"
         }
       ]
     },
     {
       "id": "f05",
-      "title": "Riverfront Reflection",
-      "narration": "At the water's edge, the world quiets. You map your next chapter by intuition, discipline, and what actually matters.",
+      "title": "ADE Dinner Decision",
+      "narration": "He went to the ADE dinner. The table was lively, the food was great, and for the first time that day he stopped spiraling.",
       "imageKey": "f05",
       "isEnding": false,
       "hotspots": [
         {
-          "id": "heartline-finish-river",
-          "label": "Lead with empathy",
-          "bbox": { "x": 0.12, "y": 0.24, "w": 0.34, "h": 0.56 },
-          "nextFrameId": "f09"
+          "id": "stay-longer",
+          "label": "Stay and enjoy the dinner",
+          "bbox": { "x": 0.12, "y": 0.2, "w": 0.34, "h": 0.6 },
+          "nextFrameId": "f06"
         },
         {
-          "id": "craft-finish-river",
-          "label": "Go deep on mastery",
-          "bbox": { "x": 0.54, "y": 0.24, "w": 0.34, "h": 0.56 },
-          "nextFrameId": "f10"
+          "id": "leave-early",
+          "label": "Leave early to finish slides",
+          "bbox": { "x": 0.54, "y": 0.2, "w": 0.34, "h": 0.6 },
+          "nextFrameId": "f07"
         }
       ]
     },
     {
       "id": "f06",
-      "title": "Garage Jam",
-      "narration": "Rhythms lock in with friends. You realize your best decisions happen when craft and connection happen in the same room.",
+      "title": "Back Late, Clock at 11:47 PM",
+      "narration": "Back at the hotel, the stress returned instantly: not enough slides, not enough time. Now the decision had to be smarter, not louder.",
       "imageKey": "f06",
       "isEnding": false,
       "hotspots": [
         {
-          "id": "trailblazer-finish-jam",
-          "label": "Launch the bold version",
-          "bbox": { "x": 0.16, "y": 0.2, "w": 0.3, "h": 0.62 },
+          "id": "panic-manual",
+          "label": "Panic and edit manually",
+          "bbox": { "x": 0.12, "y": 0.2, "w": 0.34, "h": 0.62 },
           "nextFrameId": "f08"
         },
         {
-          "id": "craft-finish-jam",
-          "label": "Refine the craft",
-          "bbox": { "x": 0.56, "y": 0.2, "w": 0.3, "h": 0.62 },
-          "nextFrameId": "f10"
+          "id": "launch-codex-skill",
+          "label": "Launch Codex with Minh's skill",
+          "bbox": { "x": 0.54, "y": 0.2, "w": 0.34, "h": 0.62 },
+          "nextFrameId": "f09"
         }
       ]
     },
     {
       "id": "f07",
-      "title": "Chess and Chai Debate",
-      "narration": "Every move has tradeoffs. You play patiently, listening more than speaking, then choose what kind of impact you want to leave.",
+      "title": "Early Return, Same Block",
+      "narration": "Even leaving dinner early did not fix the core issue. He still had a half-built deck and a ticking clock.",
       "imageKey": "f07",
       "isEnding": false,
       "hotspots": [
         {
-          "id": "trailblazer-finish-chess",
-          "label": "Play for scale",
+          "id": "give-up",
+          "label": "Close laptop and hope",
           "bbox": { "x": 0.12, "y": 0.2, "w": 0.34, "h": 0.62 },
-          "nextFrameId": "f08"
+          "nextFrameId": "f10"
         },
         {
-          "id": "heartline-finish-chess",
-          "label": "Play for people",
+          "id": "use-skill",
+          "label": "Use Codex + Minh skill now",
           "bbox": { "x": 0.54, "y": 0.2, "w": 0.34, "h": 0.62 },
           "nextFrameId": "f09"
         }
@@ -152,24 +152,24 @@
     },
     {
       "id": "f08",
-      "title": "Ending: Trailblazer",
-      "narration": "You choose velocity with intent. The result is bold work, visible outcomes, and a path others begin to follow.",
+      "title": "Ending: Brute Force Night",
+      "narration": "He pushed manually into the night, exhausted and unhappy. The deck was barely done, and the process took a heavy toll.",
       "imageKey": "f08",
       "isEnding": true,
       "hotspots": []
     },
     {
       "id": "f09",
-      "title": "Ending: Heartline",
-      "narration": "You choose people-centered leadership. The result is trust, resilient teams, and a life that feels aligned.",
+      "title": "Ending: Codex + Minh Skill Save",
+      "narration": "He launched a Codex task with Minh's slide skill, and the deck assembled automatically. Panic turned into relief, and he finally slept with confidence.",
       "imageKey": "f09",
       "isEnding": true,
       "hotspots": []
     },
     {
       "id": "f10",
-      "title": "Ending: Craftsperson",
-      "narration": "You choose mastery over noise. The result is deep skill, timeless work, and quiet confidence in every step.",
+      "title": "Ending: Missed Momentum",
+      "narration": "He shut the laptop without a real plan and hoped tomorrow would sort itself out. The stress was postponed, not solved.",
       "imageKey": "f10",
       "isEnding": true,
       "hotspots": []
