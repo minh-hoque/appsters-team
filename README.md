@@ -1,6 +1,6 @@
-# Apps SDK Pizzaz Examples
+# TACOS Exchange (Apps SDK + MCP)
 
-Focused Apps SDK + MCP example centered on Pizzaz widgets.
+Focused Apps SDK + MCP example centered on a modern TACOS betting floor widget.
 
 ## Project layout
 
@@ -11,6 +11,13 @@ Focused Apps SDK + MCP example centered on Pizzaz widgets.
 - `assets/` - built widget HTML/JS/CSS output
 - `build-all.mts` - widget production build script
 - `vite.config.mts` - local widget dev server config
+
+## Primary tool
+
+- `tacos-book` - simulated internal prediction market where users bet TACOS on milestone outcomes.
+  - configurable desk, risk mode, and seed balance
+  - optional simulated order placement in tool input
+  - rich widget output with markets, bet slip, positions, leaderboard, and activity feed
 
 ## Prerequisites
 

@@ -6,7 +6,39 @@ import fs from "fs";
 import crypto from "crypto";
 import tailwindcss from "@tailwindcss/vite";
 
-const entries = fg.sync("ui/**/index.{tsx,jsx}").sort();
+function readActiveWidgetNames(): Set<string> {
+  const names = new Set<string>();
+  const indexPath = path.resolve("tools/index.ts");
+  const indexSource = fs.readFileSync(indexPath, "utf8");
+  const importMatches = indexSource.matchAll(/from\s+"\.\/([^"]+)"/g);
+
+  for (const match of importMatches) {
+    const toolFile = match[1];
+    if (!toolFile) {
+      continue;
+    }
+
+    const toolPath = path.resolve("tools", `${toolFile}.ts`);
+    if (!fs.existsSync(toolPath)) {
+      continue;
+    }
+
+    const toolSource = fs.readFileSync(toolPath, "utf8");
+    const widgetMatch = toolSource.match(/ui:\s*"([^"]+)"/);
+    if (widgetMatch?.[1]) {
+      names.add(widgetMatch[1]);
+    }
+  }
+
+  return names;
+}
+
+const activeWidgetNames = readActiveWidgetNames();
+
+const entries = fg
+  .sync("ui/**/index.{tsx,jsx}")
+  .filter((file) => activeWidgetNames.has(path.basename(path.dirname(file))))
+  .sort();
 const outDir = "assets";
 
 const PER_ENTRY_CSS_GLOB = "**/*.{css,pcss,scss,sass}";
@@ -14,6 +46,12 @@ const PER_ENTRY_CSS_IGNORE = "**/*.module.*".split(",").map((s) => s.trim());
 const GLOBAL_CSS_LIST = [path.resolve("ui/index.css")];
 
 const builtNames: string[] = [];
+
+if (entries.length === 0) {
+  throw new Error(
+    "No widget entries matched active tool definitions. Check tools/index.ts and tool.ui names.",
+  );
+}
 
 function wrapEntryPlugin(
   virtualId: string,

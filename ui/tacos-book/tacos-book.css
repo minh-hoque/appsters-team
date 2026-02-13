@@ -1,0 +1,532 @@
+.tacos-app-shell {
+  position: relative;
+  width: 100%;
+  min-height: 680px;
+  overflow: hidden;
+  border-radius: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: linear-gradient(180deg, #f8fbfb 0%, #eef3f3 100%);
+  color: #0f1714;
+  font-family: "Soehne", "Geist", "Avenir Next", "Segoe UI", sans-serif;
+}
+
+.tacos-background {
+  position: absolute;
+  inset: -30%;
+  background:
+    radial-gradient(circle at 18% 20%, rgba(16, 163, 127, 0.24), transparent 48%),
+    radial-gradient(circle at 80% 12%, rgba(0, 0, 0, 0.15), transparent 54%),
+    radial-gradient(circle at 65% 80%, rgba(16, 163, 127, 0.14), transparent 42%);
+  filter: blur(30px);
+  pointer-events: none;
+}
+
+.tacos-app {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 18px;
+  padding: 18px;
+}
+
+.tacos-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.tacos-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.tacos-brand-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: linear-gradient(145deg, #10a37f 0%, #72ffd0 100%);
+  box-shadow: 0 0 24px rgba(16, 163, 127, 0.7);
+}
+
+.tacos-kicker {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(14, 26, 22, 0.68);
+}
+
+.tacos-brand h1 {
+  margin: 0;
+  font-size: 22px;
+  letter-spacing: -0.02em;
+}
+
+.tacos-metrics {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.metric-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(16, 23, 20, 0.12);
+  background: rgba(255, 255, 255, 0.72);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.wallet-pill {
+  background: linear-gradient(145deg, rgba(16, 163, 127, 0.18), rgba(255, 255, 255, 0.86));
+}
+
+.hero-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.hero-card {
+  border-radius: 18px;
+  padding: 14px;
+  border: 1px solid rgba(20, 28, 25, 0.14);
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(8px);
+}
+
+.hero-card.glow {
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.82), rgba(16, 163, 127, 0.2));
+}
+
+.hero-card .label {
+  margin: 0;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(15, 23, 20, 0.64);
+}
+
+.hero-card .value {
+  margin: 6px 0 2px;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.hero-card .value.caps {
+  text-transform: uppercase;
+}
+
+.hero-card .meta {
+  margin: 0;
+  font-size: 12px;
+  color: rgba(15, 23, 20, 0.72);
+}
+
+.content-grid {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 10px;
+}
+
+.glass {
+  border-radius: 20px;
+  border: 1px solid rgba(17, 24, 22, 0.12);
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(10px);
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.section-header h2 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.section-header span {
+  font-size: 11px;
+  color: rgba(15, 23, 20, 0.62);
+}
+
+.markets-column {
+  padding: 14px;
+}
+
+.market-list {
+  margin-top: 12px;
+  display: grid;
+  gap: 10px;
+}
+
+.market-card {
+  width: 100%;
+  text-align: left;
+  border-radius: 16px;
+  border: 1px solid rgba(20, 29, 26, 0.12);
+  background: linear-gradient(150deg, rgba(255, 255, 255, 0.88), rgba(247, 251, 250, 0.88));
+  padding: 12px;
+  display: grid;
+  gap: 8px;
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.market-card:hover {
+  transform: translateY(-1px);
+  border-color: rgba(16, 163, 127, 0.4);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.1);
+}
+
+.market-card.selected {
+  border-color: rgba(16, 163, 127, 0.58);
+  box-shadow: 0 16px 32px rgba(16, 163, 127, 0.16);
+}
+
+.market-topline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.category-chip,
+.featured-chip,
+.momentum-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: 999px;
+  padding: 3px 8px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.category-chip {
+  background: rgba(15, 24, 20, 0.08);
+  color: rgba(15, 24, 20, 0.74);
+}
+
+.featured-chip {
+  background: rgba(16, 163, 127, 0.15);
+  color: #0b6f56;
+}
+
+.market-card h3 {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.32;
+}
+
+.market-card p {
+  margin: 0;
+  color: rgba(15, 23, 20, 0.64);
+  font-size: 12px;
+}
+
+.odds-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.odds-group {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.odds-group strong {
+  font-size: 20px;
+  letter-spacing: -0.03em;
+}
+
+.odds-group span {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.odds-group.yes strong,
+.odds-group.yes span {
+  color: #0c8a69;
+}
+
+.odds-group.no strong,
+.odds-group.no span {
+  color: #1f2825;
+}
+
+.probability-track {
+  width: 100%;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(15, 23, 20, 0.12);
+  overflow: hidden;
+}
+
+.probability-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #10a37f 0%, #0f7d62 100%);
+}
+
+.market-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 11px;
+  color: rgba(15, 23, 20, 0.65);
+}
+
+.momentum-chip.is-up {
+  background: rgba(16, 163, 127, 0.14);
+  color: #0c8a69;
+}
+
+.momentum-chip.is-down {
+  background: rgba(225, 73, 73, 0.13);
+  color: #c53636;
+}
+
+.momentum-chip.is-flat {
+  background: rgba(13, 20, 18, 0.1);
+  color: rgba(13, 20, 18, 0.78);
+}
+
+.side-column {
+  display: grid;
+  gap: 10px;
+}
+
+.bet-slip,
+.panel {
+  padding: 14px;
+}
+
+.bet-market-title {
+  margin: 10px 0;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.36;
+}
+
+.side-toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.side-toggle button {
+  border-radius: 10px;
+  border: 1px solid rgba(15, 23, 20, 0.15);
+  padding: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+}
+
+.side-toggle button.active.yes {
+  border-color: rgba(16, 163, 127, 0.75);
+  background: rgba(16, 163, 127, 0.15);
+  color: #0c8a69;
+}
+
+.side-toggle button.active.no {
+  border-color: rgba(31, 40, 37, 0.6);
+  background: rgba(31, 40, 37, 0.13);
+  color: #1f2825;
+}
+
+.stake-box {
+  margin-top: 12px;
+  display: grid;
+  gap: 6px;
+}
+
+.stake-box label {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.stake-box input[type="range"] {
+  width: 100%;
+  accent-color: #10a37f;
+}
+
+.calc-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.calc-grid dt {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(15, 23, 20, 0.55);
+}
+
+.calc-grid dd {
+  margin: 2px 0 0;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.positive {
+  color: #0c8a69;
+}
+
+.place-button {
+  width: 100%;
+  border: none;
+  border-radius: 12px;
+  padding: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  color: #f8fffd;
+  background: linear-gradient(135deg, #10a37f 0%, #08765c 100%);
+  transition: filter 0.2s ease, transform 0.2s ease;
+}
+
+.place-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  filter: brightness(1.04);
+}
+
+.place-button:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+}
+
+.stacked-panels {
+  display: grid;
+  gap: 10px;
+}
+
+.ticket-list,
+.leaderboard-list,
+.feed-list {
+  margin-top: 10px;
+  display: grid;
+  gap: 8px;
+}
+
+.ticket-row,
+.leader-row,
+.feed-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  border-radius: 10px;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.76);
+  border: 1px solid rgba(16, 24, 21, 0.1);
+}
+
+.ticket-row p {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.ticket-row small,
+.ticket-values small {
+  color: rgba(15, 23, 20, 0.6);
+  font-size: 11px;
+}
+
+.ticket-values {
+  text-align: right;
+}
+
+.ticket-values strong {
+  display: block;
+  font-size: 13px;
+}
+
+.leader-row {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.feed-row {
+  justify-content: flex-start;
+  font-size: 12px;
+}
+
+.feed-row .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  flex-shrink: 0;
+  background: rgba(15, 23, 20, 0.35);
+}
+
+.feed-row.win .dot {
+  background: #10a37f;
+}
+
+.feed-row.risk .dot {
+  background: #db5050;
+}
+
+.feed-row p {
+  margin: 0;
+  line-height: 1.35;
+}
+
+@media (max-width: 980px) {
+  .hero-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .content-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .tacos-app-shell {
+    min-height: 560px;
+    border-radius: 20px;
+  }
+
+  .tacos-app {
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .tacos-brand h1 {
+    font-size: 19px;
+  }
+
+  .hero-card .value {
+    font-size: 21px;
+  }
+
+  .calc-grid {
+    grid-template-columns: 1fr;
+  }
+}
