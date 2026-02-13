@@ -1,4 +1,4 @@
-# Anurag Interactive Story Narrative (v1)
+# Deja Vu Interactive Story Narrative (v1)
 
 ## Frame f01 - The Choice of Tempo
 You stand at a crossroads where two versions of your evening meet: one begins before sunrise with chai and stillness; the other starts at midnight with code and electric focus.

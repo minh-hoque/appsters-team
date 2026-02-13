@@ -120,7 +120,7 @@ async function callStoryTool(payload: StoryToolInput): Promise<StoryOutput> {
     throw new Error("window.openai.callTool is unavailable in this runtime.");
   }
 
-  const rawResponse = await window.openai.callTool("anurag-story", payload);
+  const rawResponse = await window.openai.callTool("deja-vu", payload);
   const normalized = normalizeToolOutput(rawResponse);
 
   if (!normalized) {
@@ -132,7 +132,7 @@ async function callStoryTool(payload: StoryToolInput): Promise<StoryOutput> {
 
 function App() {
   const [widgetState, setWidgetState] = useWidgetState<StoryWidgetState>(() => ({
-    storyId: "anurag-v1",
+    storyId: "deja-vu-v1",
     currentFrameId: null,
     progress: null,
     frame: null,
@@ -205,7 +205,7 @@ function App() {
       }
 
       initializedRef.current = true;
-      void runTransition({ action: "start", storyId: "anurag-v1" });
+      void runTransition({ action: "start", storyId: "deja-vu-v1" });
       return;
     }
 
@@ -272,7 +272,7 @@ function App() {
   );
 
   const onRestart = useCallback(async () => {
-    await runTransition({ action: "start", storyId: storyOutput?.storyId ?? "anurag-v1" });
+    await runTransition({ action: "start", storyId: storyOutput?.storyId ?? "deja-vu-v1" });
   }, [runTransition, storyOutput?.storyId]);
 
   const transitionHint = useMemo(() => {
@@ -296,7 +296,7 @@ function App() {
       <div className="overflow-hidden rounded-2xl border border-black/10 bg-white shadow-sm">
         <div className="flex items-center justify-between border-b border-black/10 bg-[#faf7f2] px-4 py-3">
           <div>
-            <h1 className="text-base font-semibold text-black">Anurag Interactive Story</h1>
+            <h1 className="text-base font-semibold text-black">Deja Vu Interactive Story</h1>
             <p className="text-xs text-black/60">
               {storyOutput?.progress.step ?? 0}/{storyOutput?.progress.total ?? 0} frames explored
             </p>
@@ -381,7 +381,7 @@ function App() {
   );
 }
 
-const root = document.getElementById("anurag-story-root");
+const root = document.getElementById("deja-vu-root");
 if (root) {
   createRoot(root).render(<App />);
 }

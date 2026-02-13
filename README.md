@@ -1,6 +1,6 @@
-# Apps SDK Pizzaz Examples
+# Deja Vu ChatGPT App
 
-Focused Apps SDK + MCP example centered on Pizzaz widgets.
+Focused Apps SDK + MCP example centered on the Deja Vu interactive storytelling widget.
 
 ## Project layout
 
@@ -106,7 +106,7 @@ Run Vite UI dev server only:
 pnpm run dev:vite
 ```
 
-Generate Anurag story frame images (gpt-image-1.5, high quality):
+Generate Deja Vu story frame images (gpt-image-1.5, high quality):
 
 ```bash
 pnpm run story:images
@@ -147,19 +147,19 @@ Then add this MCP URL in ChatGPT developer mode:
 https://<your-tunnel-domain>/mcp
 ```
 
-## Demo: Anurag Interactive Story
+## Demo: Deja Vu Interactive Story
 
 The repo includes a story demo app with:
 
-- MCP tool: `anurag-story`
-- Widget: `ui/anurag-story/index.tsx`
-- Story graph: `content/anurag-story/story-graph.json`
-- Narrative/profile/prompts: `content/anurag-story/*`
+- MCP tool: `deja-vu`
+- Widget: `ui/deja-vu/index.tsx`
+- Story graph: `content/deja-vu/story-graph.json`
+- Narrative/profile/prompts: `content/deja-vu/*`
 
 Suggested prompt in ChatGPT:
 
 ```text
-Use the anurag-story tool and start the interactive story.
+Use the deja-vu tool and start the interactive story.
 ```
 
 After launch, click highlighted regions in the frame to branch the narrative.

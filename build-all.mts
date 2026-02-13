@@ -6,7 +6,19 @@ import fs from "fs";
 import crypto from "crypto";
 import tailwindcss from "@tailwindcss/vite";
 
-const entries = fg.sync("ui/**/index.{tsx,jsx}").sort();
+const dejaVuTsxEntry = path.resolve("ui", "deja-vu", "index.tsx");
+const dejaVuJsxEntry = path.resolve("ui", "deja-vu", "index.jsx");
+
+const entries = [dejaVuTsxEntry, dejaVuJsxEntry]
+  .filter((entryPath) => fs.existsSync(entryPath))
+  .sort();
+
+if (entries.length === 0) {
+  throw new Error(
+    'Missing Deja Vu widget entrypoint. Expected "ui/deja-vu/index.tsx" or "ui/deja-vu/index.jsx".',
+  );
+}
+
 const outDir = "assets";
 
 const PER_ENTRY_CSS_GLOB = "**/*.{css,pcss,scss,sass}";

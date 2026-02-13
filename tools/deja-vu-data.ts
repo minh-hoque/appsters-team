@@ -1,5 +1,5 @@
 import { z } from "zod/v3";
-import storyGraphJson from "../content/anurag-story/story-graph.json";
+import storyGraphJson from "../content/deja-vu/story-graph.json";
 
 const normalizedNumber = z.number().min(0).max(1);
 
@@ -89,7 +89,7 @@ parsedStoryGraph.frames.forEach((frame, index) => {
   frameOrderById.set(frame.id, index + 1);
 });
 
-export const anuragStoryGraph: StoryGraph = parsedStoryGraph;
+export const dejaVuStoryGraph: StoryGraph = parsedStoryGraph;
 
 export function getStory(storyId?: string): StoryGraph {
   if (!storyId || storyId === parsedStoryGraph.storyId) {

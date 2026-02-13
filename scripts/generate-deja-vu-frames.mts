@@ -2,8 +2,8 @@ import fs from "node:fs/promises";
 import path from "node:path";
 
 const repoRoot = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
-const promptsPath = path.join(repoRoot, "content", "anurag-story", "image-prompts.json");
-const outDir = path.join(repoRoot, "ui", "anurag-story", "frames");
+const promptsPath = path.join(repoRoot, "content", "deja-vu", "image-prompts.json");
+const outDir = path.join(repoRoot, "ui", "deja-vu", "frames");
 
 type PromptFrame = {
   id: string;

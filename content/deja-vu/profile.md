@@ -1,4 +1,4 @@
-# Anurag Profile (Demo Curated)
+# Deja Vu Profile (Demo Curated)
 
 This demo profile is intentionally curated for a pre-authored interactive story.
 It is a starter profile and can be replaced with real details you provide.

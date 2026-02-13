@@ -12,7 +12,7 @@ const widgetCatalog = createWidgetCatalog(toolDefinitions, assetsDir);
 
 const createServerInstance = () =>
   createMcpServer({
-    name: "pizzaz-node",
+    name: "deja-vu",
     version: "0.1.0",
     widgetCatalog,
   });
@@ -23,7 +23,7 @@ const port = Number.isFinite(portEnv) ? portEnv : 8000;
 startSseServer({
   createMcpServer: createServerInstance,
   port,
-  serverLabel: "Pizzaz MCP server",
+  serverLabel: "Deja Vu MCP server",
   staticAssetsDir: assetsDir,
   staticAssetsPath: "/assets",
 });

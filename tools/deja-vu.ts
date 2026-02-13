@@ -7,17 +7,17 @@ import {
   getStory,
   type StoryFrame,
   type StoryHotspot,
-} from "./anurag-story-data";
+} from "./deja-vu-data";
 
 const clickSchema = z.object({
   x: z.number().min(0).max(1),
   y: z.number().min(0).max(1),
 });
 
-const anuragStoryInput = z
+const dejaVuInput = z
   .object({
     action: z.enum(["start", "click"]),
-    storyId: z.string().default("anurag-v1"),
+    storyId: z.string().default("deja-vu-v1"),
     currentFrameId: z.string().optional(),
     click: clickSchema.optional(),
     hotspotId: z.string().optional(),
@@ -42,7 +42,7 @@ const anuragStoryInput = z
     }
   });
 
-type StoryInput = z.infer<typeof anuragStoryInput>;
+type StoryInput = z.infer<typeof dejaVuInput>;
 
 type StoryFramePayload = {
   id: string;
@@ -134,17 +134,17 @@ function buildSuccessResponse(
 }
 
 export default defineTool({
-  name: "anurag-story",
-  title: "Play Anurag Story",
+  name: "deja-vu",
+  title: "Play Deja Vu",
   description:
-    "Run the pre-authored Anurag interactive story and resolve next frames from click coordinates.",
+    "Run the pre-authored Deja Vu interactive story and resolve next frames from click coordinates.",
   annotations: {
     readOnlyHint: true,
     openWorldHint: false,
     destructiveHint: false,
   },
-  input: anuragStoryInput,
-  ui: "anurag-story",
+  input: dejaVuInput,
+  ui: "deja-vu",
   invoking: "Opening the story",
   invoked: "Story is live",
   async handler(input) {
