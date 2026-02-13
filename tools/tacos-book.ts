@@ -119,6 +119,7 @@ const MARKET_TEMPLATES: MarketTemplate[] = [
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DATA_DIR = path.resolve(__dirname, "../data");
 const STATE_FILE = path.join(DATA_DIR, "tacos-exchange-state.json");
+let stateWriteQueue: Promise<void> = Promise.resolve();
 
 const tacosBookInput = z.object({
   bettorId: z
@@ -227,6 +228,21 @@ function loadState(): PersistedState {
 function saveState(state: PersistedState): void {
   ensureDataDir();
   fs.writeFileSync(STATE_FILE, JSON.stringify(state, null, 2), "utf8");
+}
+
+async function withStateLock<T>(task: () => T | Promise<T>): Promise<T> {
+  const previous = stateWriteQueue;
+  let release: () => void = () => {};
+  stateWriteQueue = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+
+  await previous;
+  try {
+    return await task();
+  } finally {
+    release();
+  }
 }
 
 function poolsToMarket(template: MarketTemplate, pool: MarketState): Market {
@@ -353,47 +369,49 @@ export default defineTool({
     content: Array<{ type: "text"; text: string }>;
     structuredContent: ToolOutput;
   }> {
-    const current = loadState();
-    const updated = applyBet(current, input.placeBet, input.bettorId);
-    saveState(updated);
+    return withStateLock(async () => {
+      const current = loadState();
+      const updated = applyBet(current, input.placeBet, input.bettorId);
+      saveState(updated);
 
-    const markets = MARKET_TEMPLATES.map((template) =>
-      poolsToMarket(template, updated.markets[template.id]),
-    );
+      const markets = MARKET_TEMPLATES.map((template) =>
+        poolsToMarket(template, updated.markets[template.id]),
+      );
 
-    const userBets = updated.bets
-      .filter((bet) => bet.bettorId === input.bettorId)
-      .slice(0, 8)
-      .map(toOpenBet);
+      const userBets = updated.bets
+        .filter((bet) => bet.bettorId === input.bettorId)
+        .slice(0, 8)
+        .map(toOpenBet);
 
-    const wallet = buildWallet(input.seedTacos, userBets);
+      const wallet = buildWallet(input.seedTacos, userBets);
 
-    const structuredContent: ToolOutput = {
-      appName: "TACOS Exchange",
-      generatedAtIso: new Date().toISOString(),
-      wallet,
-      summary: {
-        openMarkets: markets.length,
-        activeBets: updated.bets.length,
-      },
-      markets,
-      openBets: userBets,
-      activity: updated.activity.slice(0, 3),
-      starterPrompts: [
-        "Open TACOS Exchange.",
-        "Bet 100 TACOS YES on 'Will Toki be CEO?'.",
-        "Bet 120 TACOS NO on 'GPT-5.4 release in March'.",
-      ],
-    };
-
-    return {
-      content: [
-        {
-          type: "text",
-          text: `🌮 TACOS Exchange loaded. ${structuredContent.summary.openMarkets} markets live, ${structuredContent.summary.activeBets} total bets placed.`,
+      const structuredContent: ToolOutput = {
+        appName: "TACOS Exchange",
+        generatedAtIso: new Date().toISOString(),
+        wallet,
+        summary: {
+          openMarkets: markets.length,
+          activeBets: updated.bets.length,
         },
-      ],
-      structuredContent,
-    };
+        markets,
+        openBets: userBets,
+        activity: updated.activity.slice(0, 3),
+        starterPrompts: [
+          "Open TACOS Exchange.",
+          "Bet 100 TACOS YES on 'Will Toki be CEO?'.",
+          "Bet 120 TACOS NO on 'GPT-5.4 release in March'.",
+        ],
+      };
+
+      return {
+        content: [
+          {
+            type: "text",
+            text: `🌮 TACOS Exchange loaded. ${structuredContent.summary.openMarkets} markets live, ${structuredContent.summary.activeBets} total bets placed.`,
+          },
+        ],
+        structuredContent,
+      };
+    });
   },
 });

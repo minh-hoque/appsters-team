@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { ArrowDownRight, ArrowUpRight, RefreshCw, Sparkles } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { useWidgetProps } from "../hooks/use-widget-props";
 import { useWidgetState } from "../hooks/use-widget-state";
@@ -142,6 +142,71 @@ function marketTone(probability: number): string {
   return "Balanced";
 }
 
+function applyMarketDelta(market: Market, side: Side, stake: number): Market {
+  const baseYesPool = market.yesProbability * 1000;
+  const baseNoPool = (1 - market.yesProbability) * 1000;
+  const yesPool = side === "YES" ? baseYesPool + stake : baseYesPool;
+  const noPool = side === "NO" ? baseNoPool + stake : baseNoPool;
+  const total = Math.max(1, yesPool + noPool);
+  const yesProbability = Number((yesPool / total).toFixed(2));
+
+  return {
+    ...market,
+    yesProbability,
+    yesPrice: yesProbability,
+    noPrice: Number((1 - yesProbability).toFixed(2)),
+  };
+}
+
+function buildOptimisticSnapshot(
+  current: ToolPayload,
+  order: { marketId: string; side: Side; stakeTacos: number },
+): ToolPayload {
+  const market = current.markets.find((item) => item.id === order.marketId);
+  if (!market || current.wallet.availableTacos < order.stakeTacos) {
+    return current;
+  }
+
+  const entryPrice = order.side === "YES" ? market.yesPrice : market.noPrice;
+  const potentialPayout = Number(
+    (order.stakeTacos / Math.max(entryPrice, 0.05)).toFixed(2),
+  );
+
+  const optimisticBet: OpenBet = {
+    id: `optimistic-${Date.now()}-${order.marketId}`,
+    marketId: market.id,
+    marketTitle: market.title,
+    side: order.side,
+    stakeTacos: order.stakeTacos,
+    entryPrice,
+    potentialPayout,
+    placedAtIso: new Date().toISOString(),
+    status: "open",
+  };
+
+  return {
+    ...current,
+    generatedAtIso: new Date().toISOString(),
+    wallet: {
+      availableTacos: Math.max(0, current.wallet.availableTacos - order.stakeTacos),
+      reservedTacos: current.wallet.reservedTacos + order.stakeTacos,
+      lifetimePnlTacos: current.wallet.lifetimePnlTacos,
+    },
+    summary: {
+      ...current.summary,
+      activeBets: current.summary.activeBets + 1,
+    },
+    markets: current.markets.map((item) =>
+      item.id === market.id ? applyMarketDelta(item, order.side, order.stakeTacos) : item,
+    ),
+    openBets: [optimisticBet, ...current.openBets].slice(0, 8),
+    activity: [
+      `You placed ${order.stakeTacos} 🌮 on ${order.side} for "${market.title}".`,
+      ...current.activity,
+    ].slice(0, 3),
+  };
+}
+
 function createBettorId(): string {
   return `bettor-${Math.random().toString(36).slice(2, 8)}`;
 }
@@ -202,6 +267,7 @@ function App() {
   const baseData = useWidgetProps<ToolPayload>(FALLBACK_DATA);
   const [widgetState, setWidgetState] = useWidgetState<WidgetState>(DEFAULT_STATE);
   const [loading, setLoading] = useState(false);
+  const requestIdRef = useRef(0);
 
   const stake = widgetState?.stake ?? 50;
   const bettorId = widgetState?.bettorId ?? null;
@@ -237,6 +303,8 @@ function App() {
 
     const callTool = rawCall as (name: string, args: Record<string, unknown>) => Promise<unknown>;
 
+    const requestId = requestIdRef.current + 1;
+    requestIdRef.current = requestId;
     setLoading(true);
     try {
       const response = await callTool("tacos-book", {
@@ -245,16 +313,22 @@ function App() {
         placeBet: order,
       });
 
-      const nextSnapshot = extractPayload(response);
+      const nextSnapshot =
+        extractPayload(response) ??
+        extractPayload(window.openai?.toolOutput as unknown);
       if (nextSnapshot) {
-        setWidgetState((prev) => ({
-          stake: prev?.stake ?? 50,
-          bettorId: prev?.bettorId ?? bettorId,
-          snapshot: nextSnapshot,
-        }));
+        if (requestId === requestIdRef.current) {
+          setWidgetState((prev) => ({
+            stake: prev?.stake ?? 50,
+            bettorId: prev?.bettorId ?? bettorId,
+            snapshot: nextSnapshot,
+          }));
+        }
       }
     } finally {
-      setLoading(false);
+      if (requestId === requestIdRef.current) {
+        setLoading(false);
+      }
     }
   }
 
@@ -267,6 +341,21 @@ function App() {
   }, [bettorId, snapshot]);
 
   const placeBet = (market: Market, side: Side) => {
+    if (!bettorId || loading || data.wallet.availableTacos < stake) {
+      return;
+    }
+
+    const optimistic = buildOptimisticSnapshot(data, {
+      marketId: market.id,
+      side,
+      stakeTacos: stake,
+    });
+    setWidgetState((prev) => ({
+      stake: prev?.stake ?? 50,
+      bettorId: prev?.bettorId ?? bettorId,
+      snapshot: optimistic,
+    }));
+
     void syncWithServer({
       marketId: market.id,
       side,
@@ -279,7 +368,7 @@ function App() {
       <div className="tacos-screen">
         <header className="header-row">
           <div>
-            <p className="eyebrow">OpenAI Internal Market</p>
+            <p className="eyebrow">Taco Party Market</p>
             <h1>🌮 {data.appName}</h1>
           </div>
           <div className="pill-row">
@@ -290,7 +379,7 @@ function App() {
         </header>
 
         <section className="wallet-card">
-          <p>Wallet 🌮</p>
+          <p>Party Wallet 🌮</p>
           <h2>{formatTacos(data.wallet.availableTacos)} TACOS</h2>
           <small>
             {formatTacos(data.wallet.reservedTacos)} reserved · {data.wallet.lifetimePnlTacos >= 0 ? "+" : ""}
@@ -305,7 +394,7 @@ function App() {
               type="button"
               className="refresh-button"
               onClick={() => void syncWithServer()}
-              disabled={loading}
+              disabled={loading || !bettorId}
             >
               <RefreshCw size={12} className={loading ? "spin" : ""} /> Refresh odds
             </button>
@@ -332,7 +421,7 @@ function App() {
 
         <section className="markets-card">
           <div className="section-head">
-            <h3>Live Markets</h3>
+            <h3>Live Markets 🎉</h3>
             <span>{data.markets.length} active</span>
           </div>
 
@@ -372,7 +461,7 @@ function App() {
                       type="button"
                       className="btn yes"
                       onClick={() => placeBet(market, "YES")}
-                      disabled={loading || data.wallet.availableTacos < stake}
+                      disabled={loading || !bettorId || data.wallet.availableTacos < stake}
                     >
                       <ArrowUpRight size={14} /> 🌮 Bet YES ({stake})
                     </button>
@@ -380,7 +469,7 @@ function App() {
                       type="button"
                       className="btn no"
                       onClick={() => placeBet(market, "NO")}
-                      disabled={loading || data.wallet.availableTacos < stake}
+                      disabled={loading || !bettorId || data.wallet.availableTacos < stake}
                     >
                       <ArrowDownRight size={14} /> 🌮 Bet NO ({stake})
                     </button>
@@ -394,7 +483,7 @@ function App() {
         <section className="bottom-grid">
           <article className="panel">
             <div className="section-head">
-              <h3>Your Picks</h3>
+              <h3>Your Taco Slips</h3>
               <span>{data.openBets.length}</span>
             </div>
             <div className="pick-list">
@@ -417,7 +506,7 @@ function App() {
 
           <article className="panel">
             <div className="section-head">
-              <h3>Market Pulse</h3>
+              <h3>Party Buzz</h3>
               <Sparkles size={14} />
             </div>
             <ul className="pulse-list">
