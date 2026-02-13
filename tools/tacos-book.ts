@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 import { z } from "zod/v3";
 import { defineTool } from "../utils/define-tool";
 
-type BetSide = "YES" | "NO";
+type BetSide = "YES" | "NO" | "TACO_BELL";
 
 type MarketTemplate = {
   id: string;
@@ -18,6 +18,7 @@ type MarketTemplate = {
 type MarketState = {
   yesPool: number;
   noPool: number;
+  bellPool: number;
 };
 
 type PersistedBet = {
@@ -92,7 +93,7 @@ const MARKET_TEMPLATES: MarketTemplate[] = [
   },
   {
     id: "ade-name-stay",
-    title: "Will Ade name stay?",
+    title: "Will ADE name stay?",
     subtitle: "Naming decision check by late March",
     featured: true,
     initialYesPool: 910,
@@ -120,6 +121,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DATA_DIR = path.resolve(__dirname, "../data");
 const STATE_FILE = path.join(DATA_DIR, "tacos-exchange-state.json");
 let stateWriteQueue: Promise<void> = Promise.resolve();
+const TACO_BELL_MULTIPLIER = 10;
 
 const tacosBookInput = z.object({
   bettorId: z
@@ -138,7 +140,7 @@ const tacosBookInput = z.object({
   placeBet: z
     .object({
       marketId: z.string().min(1),
-      side: z.enum(["YES", "NO"]),
+      side: z.enum(["YES", "NO", "TACO_BELL"]),
       stakeTacos: z.number().int().min(10).max(500),
     })
     .optional()
@@ -160,6 +162,7 @@ function defaultState(): PersistedState {
       {
         yesPool: item.initialYesPool,
         noPool: item.initialNoPool,
+        bellPool: 0,
       },
     ]),
   );
@@ -190,6 +193,10 @@ function ensureShape(state: PersistedState): PersistedState {
         existing && Number.isFinite(existing.noPool)
           ? existing.noPool
           : template.initialNoPool,
+      bellPool:
+        existing && Number.isFinite(existing.bellPool)
+          ? existing.bellPool
+          : 0,
     };
   }
 
@@ -285,13 +292,25 @@ function applyBet(
   const totalPool = Math.max(1, marketState.yesPool + marketState.noPool);
   const currentYesPrice = round2(marketState.yesPool / totalPool);
   const currentNoPrice = round2(1 - currentYesPrice);
-  const entryPrice = order.side === "YES" ? currentYesPrice : currentNoPrice;
+  const entryPrice =
+    order.side === "YES"
+      ? currentYesPrice
+      : order.side === "NO"
+        ? currentNoPrice
+        : round2(1 / TACO_BELL_MULTIPLIER);
 
   if (order.side === "YES") {
     marketState.yesPool += order.stakeTacos;
-  } else {
+  } else if (order.side === "NO") {
     marketState.noPool += order.stakeTacos;
+  } else {
+    marketState.bellPool += order.stakeTacos;
   }
+
+  const possiblePayout =
+    order.side === "TACO_BELL"
+      ? order.stakeTacos * TACO_BELL_MULTIPLIER
+      : potentialPayout(order.stakeTacos, entryPrice);
 
   const newBet: PersistedBet = {
     id: `bet-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
@@ -301,13 +320,15 @@ function applyBet(
     side: order.side,
     stakeTacos: order.stakeTacos,
     entryPrice,
-    potentialPayout: potentialPayout(order.stakeTacos, entryPrice),
+    potentialPayout: possiblePayout,
     placedAtIso: new Date().toISOString(),
     status: "open",
   };
 
   const nextActivity = [
-    `${bettorId} placed ${order.stakeTacos} 🌮 on ${order.side} for "${template.title}".`,
+    order.side === "TACO_BELL"
+      ? `${bettorId} rang TACO BELL 🔔 with ${order.stakeTacos} 🌮 on "${template.title}" (all or nothing).`
+      : `${bettorId} placed ${order.stakeTacos} 🌮 on ${order.side} for "${template.title}".`,
     ...state.activity,
   ].slice(0, 20);
 
@@ -400,6 +421,7 @@ export default defineTool({
           "Open TACOS Exchange.",
           "Bet 100 TACOS YES on 'Will Toki be CEO?'.",
           "Bet 120 TACOS NO on 'GPT-5.4 release in March'.",
+          "Bet 50 TACOS TACO BELL on 'Will ADE name stay?'.",
         ],
       };
 

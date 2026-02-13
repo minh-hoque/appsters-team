@@ -1,12 +1,18 @@
 import { motion } from "framer-motion";
-import { ArrowDownRight, ArrowUpRight, RefreshCw, Sparkles } from "lucide-react";
+import {
+  ArrowDownRight,
+  ArrowUpRight,
+  BellRing,
+  RefreshCw,
+  Sparkles,
+} from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { useWidgetProps } from "../hooks/use-widget-props";
 import { useWidgetState } from "../hooks/use-widget-state";
 import "./tacos-book.css";
 
-type Side = "YES" | "NO";
+type Side = "YES" | "NO" | "TACO_BELL";
 
 type Market = {
   id: string;
@@ -80,7 +86,7 @@ const FALLBACK_DATA: ToolPayload = {
     },
     {
       id: "ade-name-stay",
-      title: "Will Ade name stay?",
+      title: "Will ADE name stay?",
       subtitle: "Naming decision check by late March",
       yesProbability: 0.91,
       yesPrice: 0.91,
@@ -143,6 +149,10 @@ function marketTone(probability: number): string {
 }
 
 function applyMarketDelta(market: Market, side: Side, stake: number): Market {
+  if (side === "TACO_BELL") {
+    return market;
+  }
+
   const baseYesPool = market.yesProbability * 1000;
   const baseNoPool = (1 - market.yesProbability) * 1000;
   const yesPool = side === "YES" ? baseYesPool + stake : baseYesPool;
@@ -167,10 +177,12 @@ function buildOptimisticSnapshot(
     return current;
   }
 
-  const entryPrice = order.side === "YES" ? market.yesPrice : market.noPrice;
-  const potentialPayout = Number(
-    (order.stakeTacos / Math.max(entryPrice, 0.05)).toFixed(2),
-  );
+  const entryPrice =
+    order.side === "YES" ? market.yesPrice : order.side === "NO" ? market.noPrice : 0.1;
+  const potentialPayout =
+    order.side === "TACO_BELL"
+      ? order.stakeTacos * 10
+      : Number((order.stakeTacos / Math.max(entryPrice, 0.05)).toFixed(2));
 
   const optimisticBet: OpenBet = {
     id: `optimistic-${Date.now()}-${order.marketId}`,
@@ -201,10 +213,19 @@ function buildOptimisticSnapshot(
     ),
     openBets: [optimisticBet, ...current.openBets].slice(0, 8),
     activity: [
-      `You placed ${order.stakeTacos} 🌮 on ${order.side} for "${market.title}".`,
+      order.side === "TACO_BELL"
+        ? `You rang TACO BELL 🔔 with ${order.stakeTacos} 🌮 on "${market.title}" (all or nothing).`
+        : `You placed ${order.stakeTacos} 🌮 on ${order.side} for "${market.title}".`,
       ...current.activity,
     ].slice(0, 3),
   };
+}
+
+function sideLabel(side: Side): string {
+  if (side === "TACO_BELL") {
+    return "TACO BELL";
+  }
+  return side;
 }
 
 function createBettorId(): string {
@@ -473,6 +494,14 @@ function App() {
                     >
                       <ArrowDownRight size={14} /> 🌮 Bet NO ({stake})
                     </button>
+                    <button
+                      type="button"
+                      className="btn bell"
+                      onClick={() => placeBet(market, "TACO_BELL")}
+                      disabled={loading || !bettorId || data.wallet.availableTacos < stake}
+                    >
+                      <BellRing size={14} /> 🔔 TACO BELL ({stake})
+                    </button>
                   </div>
                 </motion.article>
               );
@@ -492,7 +521,7 @@ function App() {
                   <div>
                     <p>{bet.marketTitle}</p>
                     <small>
-                      {bet.side} · {timeLabel(bet.placedAtIso)}
+                      {sideLabel(bet.side)} · {timeLabel(bet.placedAtIso)}
                     </small>
                   </div>
                   <div className="right">

@@ -316,7 +316,7 @@
 
 .action-row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   gap: 8px;
 }
 
@@ -352,6 +352,12 @@
 .btn.no {
   background: linear-gradient(145deg, #923b25, #672311);
   color: #fff4ef;
+}
+
+.btn.bell {
+  background: linear-gradient(145deg, #6b2bd6, #41208c);
+  color: #f8f2ff;
+  box-shadow: 0 0 0 1px rgba(129, 79, 230, 0.35) inset;
 }
 
 .bottom-grid {
@@ -446,6 +452,10 @@
 
   .odds-row strong {
     font-size: 28px;
+  }
+
+  .action-row {
+    grid-template-columns: 1fr 1fr;
   }
 
   .bottom-grid {
