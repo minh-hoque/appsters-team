@@ -14,6 +14,7 @@
     "dev:ui:watch": "chokidar \"ui/**/*\" \"build-all.mts\" \"tailwind.config.ts\" \"package.json\" -c \"pnpm run build\" --debounce 250",
     "dev:mcp": "dotenv -e .env -- sh -c 'PORT=${MCP_PORT:-8000} pnpm run mcp:dev'",
     "dev:vite": "vite --config vite.config.mts",
+    "story:images": "node ./scripts/generate-anurag-frames.mts",
     "tsc": "tsc -b",
     "tsc:app": "tsc -p tsconfig.app.json",
     "tsc:mcp": "tsc -p tsconfig.mcp.json",

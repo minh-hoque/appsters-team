@@ -106,6 +106,12 @@ Run Vite UI dev server only:
 pnpm run dev:vite
 ```
 
+Generate Anurag story frame images (gpt-image-1.5, high quality):
+
+```bash
+pnpm run story:images
+```
+
 Optional separate static asset serving (not needed for normal MCP dev):
 
 ```bash
@@ -140,6 +146,23 @@ Then add this MCP URL in ChatGPT developer mode:
 ```text
 https://<your-tunnel-domain>/mcp
 ```
+
+## Demo: Anurag Interactive Story
+
+The repo includes a story demo app with:
+
+- MCP tool: `anurag-story`
+- Widget: `ui/anurag-story/index.tsx`
+- Story graph: `content/anurag-story/story-graph.json`
+- Narrative/profile/prompts: `content/anurag-story/*`
+
+Suggested prompt in ChatGPT:
+
+```text
+Use the anurag-story tool and start the interactive story.
+```
+
+After launch, click highlighted regions in the frame to branch the narrative.
 
 ## Deploy note
 

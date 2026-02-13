@@ -1,0 +1,178 @@
+{
+  "storyId": "anurag-v1",
+  "title": "Anurag Interactive Story",
+  "startFrameId": "f01",
+  "frames": [
+    {
+      "id": "f01",
+      "title": "The Choice of Tempo",
+      "narration": "You stand at a crossroads where two versions of your evening meet: one begins before sunrise with chai and stillness; the other starts at midnight with code and electric focus.",
+      "imageKey": "f01",
+      "isEnding": false,
+      "hotspots": [
+        {
+          "id": "dawn-chai",
+          "label": "Follow the dawn chai path",
+          "bbox": { "x": 0.08, "y": 0.18, "w": 0.34, "h": 0.66 },
+          "nextFrameId": "f02"
+        },
+        {
+          "id": "midnight-code",
+          "label": "Step into midnight code",
+          "bbox": { "x": 0.58, "y": 0.16, "w": 0.34, "h": 0.68 },
+          "nextFrameId": "f03"
+        }
+      ]
+    },
+    {
+      "id": "f02",
+      "title": "Old Delhi Morning",
+      "narration": "Steam rises from a clay cup as the city wakes. You notice tiny details others miss, and the day opens with a sense of purpose.",
+      "imageKey": "f02",
+      "isEnding": false,
+      "hotspots": [
+        {
+          "id": "bazaar-sprint",
+          "label": "Chase the bazaar momentum",
+          "bbox": { "x": 0.12, "y": 0.24, "w": 0.32, "h": 0.58 },
+          "nextFrameId": "f04"
+        },
+        {
+          "id": "river-reflection",
+          "label": "Take the riverfront path",
+          "bbox": { "x": 0.56, "y": 0.24, "w": 0.32, "h": 0.58 },
+          "nextFrameId": "f05"
+        }
+      ]
+    },
+    {
+      "id": "f03",
+      "title": "Rooftop Hacknight",
+      "narration": "Laptop glow, cool air, and the hum of possibility. You prototype fast, then pause to ask if this build should also move people.",
+      "imageKey": "f03",
+      "isEnding": false,
+      "hotspots": [
+        {
+          "id": "garage-jam",
+          "label": "Join the garage jam",
+          "bbox": { "x": 0.1, "y": 0.22, "w": 0.35, "h": 0.6 },
+          "nextFrameId": "f06"
+        },
+        {
+          "id": "chess-debate",
+          "label": "Enter the chess and chai debate",
+          "bbox": { "x": 0.55, "y": 0.22, "w": 0.35, "h": 0.6 },
+          "nextFrameId": "f07"
+        }
+      ]
+    },
+    {
+      "id": "f04",
+      "title": "Spice Bazaar Sprint",
+      "narration": "Color, noise, momentum. You weave through crowds like a strategist under pressure, deciding whether to chase the next frontier or invest in people first.",
+      "imageKey": "f04",
+      "isEnding": false,
+      "hotspots": [
+        {
+          "id": "trailblazer-finish",
+          "label": "Choose velocity and scale",
+          "bbox": { "x": 0.14, "y": 0.2, "w": 0.32, "h": 0.62 },
+          "nextFrameId": "f08"
+        },
+        {
+          "id": "heartline-finish",
+          "label": "Choose people and trust",
+          "bbox": { "x": 0.56, "y": 0.2, "w": 0.32, "h": 0.62 },
+          "nextFrameId": "f09"
+        }
+      ]
+    },
+    {
+      "id": "f05",
+      "title": "Riverfront Reflection",
+      "narration": "At the water's edge, the world quiets. You map your next chapter by intuition, discipline, and what actually matters.",
+      "imageKey": "f05",
+      "isEnding": false,
+      "hotspots": [
+        {
+          "id": "heartline-finish-river",
+          "label": "Lead with empathy",
+          "bbox": { "x": 0.12, "y": 0.24, "w": 0.34, "h": 0.56 },
+          "nextFrameId": "f09"
+        },
+        {
+          "id": "craft-finish-river",
+          "label": "Go deep on mastery",
+          "bbox": { "x": 0.54, "y": 0.24, "w": 0.34, "h": 0.56 },
+          "nextFrameId": "f10"
+        }
+      ]
+    },
+    {
+      "id": "f06",
+      "title": "Garage Jam",
+      "narration": "Rhythms lock in with friends. You realize your best decisions happen when craft and connection happen in the same room.",
+      "imageKey": "f06",
+      "isEnding": false,
+      "hotspots": [
+        {
+          "id": "trailblazer-finish-jam",
+          "label": "Launch the bold version",
+          "bbox": { "x": 0.16, "y": 0.2, "w": 0.3, "h": 0.62 },
+          "nextFrameId": "f08"
+        },
+        {
+          "id": "craft-finish-jam",
+          "label": "Refine the craft",
+          "bbox": { "x": 0.56, "y": 0.2, "w": 0.3, "h": 0.62 },
+          "nextFrameId": "f10"
+        }
+      ]
+    },
+    {
+      "id": "f07",
+      "title": "Chess and Chai Debate",
+      "narration": "Every move has tradeoffs. You play patiently, listening more than speaking, then choose what kind of impact you want to leave.",
+      "imageKey": "f07",
+      "isEnding": false,
+      "hotspots": [
+        {
+          "id": "trailblazer-finish-chess",
+          "label": "Play for scale",
+          "bbox": { "x": 0.12, "y": 0.2, "w": 0.34, "h": 0.62 },
+          "nextFrameId": "f08"
+        },
+        {
+          "id": "heartline-finish-chess",
+          "label": "Play for people",
+          "bbox": { "x": 0.54, "y": 0.2, "w": 0.34, "h": 0.62 },
+          "nextFrameId": "f09"
+        }
+      ]
+    },
+    {
+      "id": "f08",
+      "title": "Ending: Trailblazer",
+      "narration": "You choose velocity with intent. The result is bold work, visible outcomes, and a path others begin to follow.",
+      "imageKey": "f08",
+      "isEnding": true,
+      "hotspots": []
+    },
+    {
+      "id": "f09",
+      "title": "Ending: Heartline",
+      "narration": "You choose people-centered leadership. The result is trust, resilient teams, and a life that feels aligned.",
+      "imageKey": "f09",
+      "isEnding": true,
+      "hotspots": []
+    },
+    {
+      "id": "f10",
+      "title": "Ending: Craftsperson",
+      "narration": "You choose mastery over noise. The result is deep skill, timeless work, and quiet confidence in every step.",
+      "imageKey": "f10",
+      "isEnding": true,
+      "hotspots": []
+    }
+  ]
+}
