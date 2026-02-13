@@ -87,6 +87,23 @@ type StoryToolInput = {
   hotspotId?: string;
 };
 
+function isSameStoryOutput(left: StoryOutput | null, right: StoryOutput): boolean {
+  if (!left) {
+    return false;
+  }
+
+  return (
+    left.storyId === right.storyId &&
+    left.frame.id === right.frame.id &&
+    left.transition.fromFrameId === right.transition.fromFrameId &&
+    left.transition.toFrameId === right.transition.toFrameId &&
+    left.transition.hotspotId === right.transition.hotspotId &&
+    left.transition.missedClick === right.transition.missedClick &&
+    left.progress.step === right.progress.step &&
+    left.progress.total === right.progress.total
+  );
+}
+
 function getImageUrl(imageKey: string): string {
   const candidate = frameMap[imageKey as keyof typeof frameMap];
   if (candidate) {
@@ -147,6 +164,11 @@ function App() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const initializedRef = useRef(false);
+  const storyOutputRef = useRef<StoryOutput | null>(storyOutput);
+
+  useEffect(() => {
+    storyOutputRef.current = storyOutput;
+  }, [storyOutput]);
 
   const persistWidgetState = useCallback(
     (output: StoryOutput) => {
@@ -184,37 +206,46 @@ function App() {
   );
 
   useEffect(() => {
-    if (!initializedRef.current) {
-      const fromTool = normalizeToolOutput(rawToolOutput);
-      if (fromTool) {
-        setStoryOutput(fromTool);
-        persistWidgetState(fromTool);
-        initializedRef.current = true;
-        return;
-      }
+    if (initializedRef.current) {
+      return;
+    }
 
-      if (widgetState?.frame && widgetState.progress && widgetState.transition) {
-        setStoryOutput({
-          storyId: widgetState.storyId,
-          frame: widgetState.frame,
-          progress: widgetState.progress,
-          transition: widgetState.transition,
-        });
-        initializedRef.current = true;
-        return;
-      }
-
+    const fromTool = normalizeToolOutput(rawToolOutput);
+    if (fromTool) {
+      setStoryOutput(fromTool);
+      persistWidgetState(fromTool);
       initializedRef.current = true;
-      void runTransition({ action: "start" });
+      return;
+    }
+
+    if (widgetState?.frame && widgetState.progress && widgetState.transition) {
+      setStoryOutput({
+        storyId: widgetState.storyId,
+        frame: widgetState.frame,
+        progress: widgetState.progress,
+        transition: widgetState.transition,
+      });
+      initializedRef.current = true;
+      return;
+    }
+
+    initializedRef.current = true;
+    void runTransition({ action: "start" });
+  }, [persistWidgetState, rawToolOutput, runTransition, widgetState]);
+
+  useEffect(() => {
+    if (!initializedRef.current) {
       return;
     }
 
     const parsed = normalizeToolOutput(rawToolOutput);
-    if (parsed && parsed.frame.id !== storyOutput?.frame.id) {
-      setStoryOutput(parsed);
-      persistWidgetState(parsed);
+    if (!parsed || isSameStoryOutput(storyOutputRef.current, parsed)) {
+      return;
     }
-  }, [persistWidgetState, rawToolOutput, runTransition, storyOutput?.frame.id, widgetState]);
+
+    setStoryOutput(parsed);
+    persistWidgetState(parsed);
+  }, [persistWidgetState, rawToolOutput]);
 
   const canInteract = !isLoading && !!storyOutput;
   const frameImageUrl = storyOutput ? getImageUrl(storyOutput.frame.imageKey) : frameF01;
@@ -329,7 +360,7 @@ function App() {
               onClick={(event) => {
                 void onHotspotClick(hotspot, event);
               }}
-              className="absolute rounded-md border border-amber-500/70 bg-amber-400/15 transition hover:bg-amber-400/25"
+                  className="absolute rounded-lg border border-amber-400/40 bg-[rgba(245,158,11,0.08)] shadow-[0_0_0_1px_rgba(251,191,36,0.14),0_4px_14px_rgba(0,0,0,0.18)] backdrop-blur-[1px] transition duration-200 hover:border-amber-300/55 hover:bg-[rgba(245,158,11,0.14)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-200/45"
               style={{
                 left: `${hotspot.bbox.x * 100}%`,
                 top: `${hotspot.bbox.y * 100}%`,
