@@ -205,7 +205,7 @@ function App() {
       }
 
       initializedRef.current = true;
-      void runTransition({ action: "start", storyId: "deja-vu-v1" });
+      void runTransition({ action: "start" });
       return;
     }
 
@@ -272,8 +272,8 @@ function App() {
   );
 
   const onRestart = useCallback(async () => {
-    await runTransition({ action: "start", storyId: storyOutput?.storyId ?? "deja-vu-v1" });
-  }, [runTransition, storyOutput?.storyId]);
+    await runTransition({ action: "start" });
+  }, [runTransition]);
 
   const transitionHint = useMemo(() => {
     if (!storyOutput) {

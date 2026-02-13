@@ -17,7 +17,10 @@ const clickSchema = z.object({
 const dejaVuInput = z
   .object({
     action: z.enum(["start", "click"]),
-    storyId: z.string().default("deja-vu-v1"),
+    storyId: z
+      .string()
+      .default("deja-vu-v1")
+      .describe("Optional in demo mode. Defaults to deja-vu-v1."),
     currentFrameId: z.string().optional(),
     click: clickSchema.optional(),
     hotspotId: z.string().optional(),
@@ -137,7 +140,7 @@ export default defineTool({
   name: "deja-vu",
   title: "Play Deja Vu",
   description:
-    "Run the pre-authored Deja Vu interactive story and resolve next frames from click coordinates.",
+    "Run the pre-authored Deja Vu interactive story and resolve next frames from click coordinates. Start with {\"action\":\"start\"}.",
   annotations: {
     readOnlyHint: true,
     openWorldHint: false,

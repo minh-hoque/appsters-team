@@ -6,9 +6,12 @@ import fs from "node:fs";
 import tailwindcss from "@tailwindcss/vite";
 
 function buildInputs() {
+  const enabledWidgets = new Set(["deja-vu"]);
   const files = fg.sync("ui/**/index.{tsx,jsx}", { dot: false });
   return Object.fromEntries(
-    files.map((f) => [path.basename(path.dirname(f)), path.resolve(f)])
+    files
+      .map((f) => [path.basename(path.dirname(f)), path.resolve(f)] as const)
+      .filter(([name]) => enabledWidgets.has(name))
   );
 }
 
